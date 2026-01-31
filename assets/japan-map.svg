@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" id="japan-map">
+  <defs>
+    <linearGradient id="seaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8f4fc"/>
+      <stop offset="100%" style="stop-color:#d0e8f7"/>
+    </linearGradient>
+    <linearGradient id="landGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8d5a2"/>
+      <stop offset="100%" style="stop-color:#7cb87a"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0.5" dy="0.5" stdDeviation="0.5" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="3" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#ff6b6b"/>
+    </marker>
+  </defs>
+  
+  <!-- 背景（海） -->
+  <rect width="100" height="100" fill="url(#seaGradient)"/>
+  
+  <!-- 日本列島 簡略化版 -->
+  <g id="japan-islands" filter="url(#shadow)">
+    <!-- 北海道 -->
+    <path id="hokkaido" class="prefecture" d="
+      M78,5 
+      L85,8 L90,10 L92,15 L90,20 L85,22 L80,20 L75,18 L72,15 L75,10 Z
+    " fill="url(#landGradient)" stroke="#5a9a5a" stroke-width="0.5"/>
+    
+    <!-- 本州 -->
+    <path id="honshu" class="prefecture" d="
+      M80,25 L85,28 L88,32 L85,35 L82,38 L80,42 L78,45 L75,48 L72,50 
+      L68,52 L65,54 L62,56 L58,58 L55,60 L52,62 L48,63 L45,64 
+      L42,65 L40,66 L38,67 L35,68 L33,67 L32,65 L35,62 L38,58 
+      L42,55 L45,52 L48,50 L52,48 L55,45 L58,42 L62,40 L65,38 
+      L68,35 L72,32 L75,28 Z
+    " fill="url(#landGradient)" stroke="#5a9a5a" stroke-width="0.5"/>
+    
+    <!-- 四国 -->
+    <path id="shikoku" class="prefecture" d="
+      M48,68 L55,67 L58,69 L56,72 L52,73 L48,72 L46,70 Z
+    " fill="url(#landGradient)" stroke="#5a9a5a" stroke-width="0.5"/>
+    
+    <!-- 九州 -->
+    <path id="kyushu" class="prefecture" d="
+      M32,68 L38,70 L40,74 L38,78 L35,80 L32,78 L30,75 L30,72 Z
+    " fill="url(#landGradient)" stroke="#5a9a5a" stroke-width="0.5"/>
+    
+    <!-- 沖縄 -->
+    <ellipse id="okinawa-island" class="prefecture" cx="22" cy="92" rx="4" ry="2" 
+      fill="url(#landGradient)" stroke="#5a9a5a" stroke-width="0.5"/>
+  </g>
+  
+  <!-- ルートライン（破線） -->
+  <g id="route-line">
+    <path id="route-path" d="
+      M22,92
+      L32,78
+      L35,74
+      L36,70
+      L48,65
+      L55,60
+      L62,57
+      L68,54
+      L75,50
+      L80,42
+      L82,35
+      L85,15
+    " fill="none" stroke="#ddd" stroke-width="1.5" stroke-dasharray="3,2" stroke-linecap="round"/>
+  </g>
+  
+  <!-- 進行済みルート（アニメーションで伸びる） -->
+  <g id="traveled-route">
+    <path id="traveled-path" d="
+      M22,92
+      L32,78
+      L35,74
+      L36,70
+      L48,65
+      L55,60
+      L62,57
+      L68,54
+      L75,50
+      L80,42
+      L82,35
+      L85,15
+    " fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round"
+    stroke-dasharray="0 1000" class="traveled-line"/>
+  </g>
+  
+  <!-- 都市マーカー -->
+  <g id="city-markers">
+    <!-- 沖縄・那覇 -->
+    <g id="marker-okinawa" class="city-marker" data-city="okinawa">
+      <circle cx="22" cy="92" r="2" fill="#fff" stroke="#ff6b6b" stroke-width="1"/>
+      <text x="22" y="97" text-anchor="middle" font-size="3" fill="#333">那覇</text>
+    </g>
+    
+    <!-- 鹿児島 -->
+    <g id="marker-kagoshima" class="city-marker" data-city="kagoshima">
+      <circle cx="32" cy="78" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="32" y="83" text-anchor="middle" font-size="3" fill="#333">鹿児島</text>
+    </g>
+    
+    <!-- 熊本 -->
+    <g id="marker-kumamoto" class="city-marker" data-city="kumamoto">
+      <circle cx="35" cy="74" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="29" y="74" text-anchor="middle" font-size="3" fill="#333">熊本</text>
+    </g>
+    
+    <!-- 福岡 -->
+    <g id="marker-fukuoka" class="city-marker" data-city="fukuoka">
+      <circle cx="36" cy="70" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="30" y="68" text-anchor="middle" font-size="3" fill="#333">福岡</text>
+    </g>
+    
+    <!-- 広島 -->
+    <g id="marker-hiroshima" class="city-marker" data-city="hiroshima">
+      <circle cx="48" cy="65" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="48" y="62" text-anchor="middle" font-size="3" fill="#333">広島</text>
+    </g>
+    
+    <!-- 岡山 -->
+    <g id="marker-okayama" class="city-marker" data-city="okayama">
+      <circle cx="55" cy="60" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="55" y="57" text-anchor="middle" font-size="3" fill="#333">岡山</text>
+    </g>
+    
+    <!-- 大阪 -->
+    <g id="marker-osaka" class="city-marker" data-city="osaka">
+      <circle cx="62" cy="57" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="62" y="54" text-anchor="middle" font-size="3" fill="#333">大阪</text>
+    </g>
+    
+    <!-- 京都 -->
+    <g id="marker-kyoto" class="city-marker" data-city="kyoto">
+      <circle cx="65" cy="54" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="70" y="54" text-anchor="middle" font-size="3" fill="#333">京都</text>
+    </g>
+    
+    <!-- 名古屋 -->
+    <g id="marker-nagoya" class="city-marker" data-city="nagoya">
+      <circle cx="68" cy="54" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="68" y="59" text-anchor="middle" font-size="3" fill="#333">名古屋</text>
+    </g>
+    
+    <!-- 静岡 -->
+    <g id="marker-shizuoka" class="city-marker" data-city="shizuoka">
+      <circle cx="75" cy="50" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="75" y="47" text-anchor="middle" font-size="3" fill="#333">静岡</text>
+    </g>
+    
+    <!-- 東京 -->
+    <g id="marker-tokyo" class="city-marker" data-city="tokyo">
+      <circle cx="80" cy="42" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="80" y="39" text-anchor="middle" font-size="3" fill="#333">東京</text>
+    </g>
+    
+    <!-- 仙台 -->
+    <g id="marker-sendai" class="city-marker" data-city="sendai">
+      <circle cx="82" cy="35" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="88" y="36" text-anchor="middle" font-size="3" fill="#333">仙台</text>
+    </g>
+    
+    <!-- 青森 -->
+    <g id="marker-aomori" class="city-marker" data-city="aomori">
+      <circle cx="82" cy="26" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="88" y="27" text-anchor="middle" font-size="3" fill="#333">青森</text>
+    </g>
+    
+    <!-- 札幌 -->
+    <g id="marker-sapporo" class="city-marker" data-city="sapporo">
+      <circle cx="85" cy="15" r="2" fill="#fff" stroke="#999" stroke-width="1"/>
+      <text x="85" y="12" text-anchor="middle" font-size="3" fill="#333">札幌</text>
+    </g>
+  </g>
+  
+  <!-- 現在地マーカー -->
+  <g id="current-location" class="current-marker" transform="translate(22, 92)">
+    <circle r="3" fill="#ff6b6b" opacity="0.3" class="pulse-ring"/>
+    <circle r="2" fill="#ff6b6b"/>
+    <circle r="1" fill="#fff"/>
+  </g>
+  
+  <!-- スタート/ゴールラベル -->
+  <g id="labels">
+    <text x="15" y="90" font-size="2.5" fill="#ff6b6b" font-weight="bold">START</text>
+    <text x="88" y="12" font-size="2.5" fill="#4CAF50" font-weight="bold">GOAL</text>
+  </g>
+</svg>

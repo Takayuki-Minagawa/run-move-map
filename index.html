@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🗾 日本縦断チャレンジ</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗾</text></svg>">
+</head>
+<body>
+  <div class="container">
+    <!-- ヘッダー -->
+    <header class="header">
+      <h1>🗾 日本縦断チャレンジ</h1>
+      <p>走って歩いて、沖縄から北海道へ！</p>
+    </header>
+
+    <!-- 地図セクション -->
+    <section class="card map-section">
+      <div id="map-container"></div>
+    </section>
+
+    <!-- 進捗セクション -->
+    <section class="card">
+      <div class="progress-section">
+        <div class="location-info">
+          <div class="location-current">
+            📍 現在地: <span id="current-city">那覇</span>
+          </div>
+          <div class="location-next">
+            🎯 次の目的地: <span id="next-city">鹿児島</span>
+            （残り <span id="next-distance">650</span> km）
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar-bg">
+            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="progress-text">
+            全体進捗: <span id="progress-percent">0</span>% / 3,000km
+          </div>
+        </div>
+      </div>
+
+      <!-- レベル表示 -->
+      <div class="level-section">
+        <div class="level-icon" id="level-icon">🐣</div>
+        <div class="level-info">
+          <div class="level-name" id="level-name">初心者トラベラー</div>
+          <div class="level-progress-bar">
+            <div class="progress" id="level-progress" style="width: 0%"></div>
+          </div>
+          <div class="level-next" id="next-level-distance">次のレベルまで 50 km</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 統計セクション -->
+    <section class="card">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value"><span id="total-distance">0</span></div>
+          <div class="stat-label">累計距離 (km)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">🔥 <span id="streak-days">0</span></div>
+          <div class="stat-label">連続日数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value"><span id="weekly-distance">0</span></div>
+          <div class="stat-label">今週 (km)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value"><span id="total-records">0</span></div>
+          <div class="stat-label">記録回数</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 記録フォーム -->
+    <section class="card">
+      <div class="card-header">📝 距離を記録</div>
+      <form id="record-form" class="form-section">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="record-date">日付</label>
+            <input type="date" id="record-date" required>
+          </div>
+          <div class="form-group">
+            <label for="record-distance">距離 (km)</label>
+            <input type="number" id="record-distance" step="0.1" min="0.1" placeholder="5.0" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>種別</label>
+            <div class="type-toggle">
+              <div class="type-option">
+                <input type="radio" name="type" id="type-run" value="run" checked>
+                <label for="type-run">🏃 ランニング</label>
+              </div>
+              <div class="type-option">
+                <input type="radio" name="type" id="type-walk" value="walk">
+                <label for="type-walk">🚶 ウォーキング</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">記録する</button>
+      </form>
+    </section>
+
+    <!-- タブセクション -->
+    <section class="tabs">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="history-tab">📜 履歴</button>
+        <button class="tab-btn" data-tab="badges-tab">🏅 バッジ</button>
+        <button class="tab-btn" data-tab="settings-tab">⚙️ 設定</button>
+      </div>
+
+      <!-- 履歴タブ -->
+      <div class="tab-content active" id="history-tab">
+        <div class="card">
+          <div class="history-list" id="history-list">
+            <p class="empty-message">まだ記録がありません</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- バッジタブ -->
+      <div class="tab-content" id="badges-tab">
+        <div class="card">
+          <div class="badges-header">
+            <div class="card-header">🏅 獲得バッジ</div>
+            <div class="badge-count" id="badge-count">0 / 20</div>
+          </div>
+          <div class="badges-grid" id="badges-list"></div>
+        </div>
+      </div>
+
+      <!-- 設定タブ -->
+      <div class="tab-content" id="settings-tab">
+        <div class="card">
+          <div class="card-header">⚙️ データ管理</div>
+          <div class="settings-section">
+            <button class="settings-btn" id="export-btn">
+              📤 データをエクスポート
+            </button>
+            <button class="settings-btn" id="import-btn">
+              📥 データをインポート
+            </button>
+            <button class="settings-btn danger" id="reset-btn">
+              🗑️ データをリセット
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="footer">
+      <p>🗾 日本縦断チャレンジ - 毎日の一歩が旅になる</p>
+    </footer>
+  </div>
+
+  <!-- 都市到達モーダル -->
+  <div class="modal" id="city-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close">×</button>
+      <div class="modal-icon">🎉</div>
+      <h2 class="modal-title" id="modal-city-name">鹿児島</h2>
+      <p class="modal-subtitle" id="modal-city-prefecture">鹿児島県</p>
+      <div class="modal-trivia" id="modal-city-trivia">
+        桜島が見える絶景の街。黒豚やさつま揚げが美味しい！
+      </div>
+      <p class="modal-landmark" id="modal-city-landmark">🏛️ 桜島</p>
+      <button class="modal-btn modal-close">すごい！</button>
+    </div>
+  </div>
+
+  <!-- ゴールモーダル -->
+  <div class="modal" id="goal-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close">×</button>
+      <div class="modal-icon">🏆</div>
+      <h2 class="modal-title">日本縦断達成！</h2>
+      <p class="modal-subtitle">おめでとうございます！</p>
+      <div class="modal-trivia">
+        あなたは3,000kmを走破し、沖縄から北海道まで日本を縦断しました！
+        これは素晴らしい偉業です！
+      </div>
+      <p class="modal-landmark">🎊 あなたは日本縦断マスターです！</p>
+      <button class="modal-btn modal-close">ありがとう！</button>
+    </div>
+  </div>
+
+  <!-- トースト通知コンテナ -->
+  <div id="toast-container"></div>
+
+  <!-- 紙吹雪コンテナ -->
+  <div id="confetti-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/routes.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

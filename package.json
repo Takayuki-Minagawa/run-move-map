@@ -1,0 +1,52 @@
+{
+  "name": "run-move-map",
+  "version": "1.0.0",
+  "description": "日本縦断チャレンジ - 走行距離・歩行距離を記録して日本地図上を旅するWebアプリ",
+  "main": "index.html",
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "serve": "python3 -m http.server 8080"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Takayuki-Minagawa/run-move-map.git"
+  },
+  "keywords": [
+    "japan",
+    "running",
+    "walking",
+    "tracker",
+    "map",
+    "fitness"
+  ],
+  "author": "Takayuki Minagawa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Takayuki-Minagawa/run-move-map/issues"
+  },
+  "homepage": "https://github.com/Takayuki-Minagawa/run-move-map#readme",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "collectCoverageFrom": [
+      "js/**/*.js"
+    ],
+    "coverageDirectory": "coverage",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ]
+  }
+}

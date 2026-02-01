@@ -3,7 +3,7 @@
  * オフライン対応とキャッシュ管理
  */
 
-const CACHE_NAME = 'japan-journey-v1';
+const CACHE_NAME = 'japan-journey-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

@@ -80,7 +80,7 @@ const Storage = {
   
   /**
    * 記録を追加
-   * @param {object} record - { date, distance, type }
+   * @param {object} record - { date, distance, type, memo, photo }
    * @returns {object} 更新後のデータ
    */
   addRecord(record) {
@@ -92,6 +92,8 @@ const Storage = {
       date: record.date,
       distance: parseFloat(record.distance),
       type: record.type, // 'run' or 'walk'
+      memo: record.memo || '',
+      photo: record.photo || null,
       createdAt: new Date().toISOString()
     };
     

@@ -536,7 +536,7 @@ const App = {
         <div class="history-info">
           <span class="history-icon">${record.type === 'run' ? '🏃' : '🚶'}</span>
           <span class="history-date">${this.formatDate(record.date)}</span>
-          <span class="history-distance">${record.distance.toFixed(1)} km</span>
+          <span class="history-distance">${record.distance.toFixed(2)} km</span>
         </div>
         <button class="history-delete" onclick="App.deleteRecord(${record.id})" title="削除">
           ✕

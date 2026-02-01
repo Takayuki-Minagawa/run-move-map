@@ -2,43 +2,26 @@
   "name": "日本縦断チャレンジ",
   "short_name": "日本縦断",
   "description": "走行距離・歩行距離を記録して日本地図上を旅するWebアプリ",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#ff6b6b",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "assets/icon-192.png",
+      "src": "./assets/icon-192.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "assets/icon-512.png",
+      "src": "./assets/icon-512.svg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
   "categories": ["fitness", "health", "lifestyle"],
   "lang": "ja",
-  "dir": "ltr",
-  "screenshots": [
-    {
-      "src": "assets/screenshot-1.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "label": "メイン画面"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "記録を追加",
-      "short_name": "記録",
-      "description": "新しい距離を記録する",
-      "url": "/index.html#record",
-      "icons": [{ "src": "assets/icon-record.png", "sizes": "96x96" }]
-    }
-  ]
+  "dir": "ltr"
 }

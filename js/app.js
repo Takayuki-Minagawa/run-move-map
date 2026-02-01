@@ -38,11 +38,10 @@ const App = {
         console.log('✅ JapanMap initialized');
       }
       
-      // ルート管理初期化
-      if (typeof RouteManager !== 'undefined') {
-        RouteManager.init();
-        this.modules.routes = RouteManager;
-        console.log('✅ RouteManager initialized');
+      // ルート管理初期化（ROUTE_DATAはグローバル関数として定義）
+      if (typeof ROUTE_DATA !== 'undefined') {
+        this.modules.routes = { data: ROUTE_DATA };
+        console.log('✅ Route data loaded');
       }
       
       // UI初期化
@@ -115,7 +114,9 @@ const App = {
   async registerServiceWorker() {
     if ('serviceWorker' in navigator) {
       try {
-        await navigator.serviceWorker.register('/sw.js');
+        // 相対パスでService Workerを登録（GitHub Pages対応）
+        const swPath = new URL('./sw.js', window.location.href).href;
+        await navigator.serviceWorker.register(swPath);
         console.log('✅ Service Worker registered');
       } catch (error) {
         console.log('Service Worker registration failed:', error);

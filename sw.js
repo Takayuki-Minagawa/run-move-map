@@ -3,25 +3,25 @@
  * オフライン対応とキャッシュ管理
  */
 
-const CACHE_NAME = 'japan-journey-v2';
+const CACHE_NAME = 'japan-journey-v3';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/app.js',
-  '/js/storage.js',
-  '/js/routes.js',
-  '/js/map.js',
-  '/js/achievements.js',
-  '/js/charts.js',
-  '/js/calendar.js',
-  '/js/goals.js',
-  '/js/theme.js',
-  '/js/i18n.js',
-  '/js/extended-achievements.js',
-  '/js/multi-routes.js',
-  '/js/social.js',
-  '/manifest.json'
+  './',
+  './index.html',
+  './css/style.css',
+  './js/app.js',
+  './js/storage.js',
+  './js/routes.js',
+  './js/map.js',
+  './js/achievements.js',
+  './js/charts.js',
+  './js/calendar.js',
+  './js/goals.js',
+  './js/theme.js',
+  './js/i18n.js',
+  './js/extended-achievements.js',
+  './js/multi-routes.js',
+  './js/social.js',
+  './manifest.json'
 ];
 
 // インストール時にキャッシュ
@@ -95,7 +95,7 @@ self.addEventListener('fetch', (event) => {
           .catch(() => {
             // オフラインでHTMLリクエストの場合はindex.htmlを返す
             if (event.request.headers.get('accept')?.includes('text/html')) {
-              return caches.match('/index.html');
+              return caches.match('./index.html');
             }
           });
       })
@@ -106,8 +106,8 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data?.text() || '今日も記録しましょう！',
-    icon: '/assets/icon-192.png',
-    badge: '/assets/icon-192.png',
+    icon: './assets/icon-192.svg',
+    badge: './assets/icon-192.svg',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -130,11 +130,11 @@ self.addEventListener('notificationclick', (event) => {
   
   if (event.action === 'record') {
     event.waitUntil(
-      clients.openWindow('/#record')
+      clients.openWindow('./#record')
     );
   } else {
     event.waitUntil(
-      clients.openWindow('/')
+      clients.openWindow('./')
     );
   }
 });

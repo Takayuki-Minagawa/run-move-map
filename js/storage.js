@@ -278,6 +278,62 @@ const Storage = {
         longest: data.stats.longestStreak
       }
     };
+  },
+  
+  /**
+   * 目標設定を保存
+   */
+  saveGoals(goals) {
+    const data = this.load();
+    data.goals = goals;
+    this.save(data);
+    return data;
+  },
+  
+  /**
+   * 誕生日を保存
+   */
+  saveBirthday(birthday) {
+    const data = this.load();
+    data.birthday = birthday;
+    this.save(data);
+    return data;
+  },
+  
+  /**
+   * アクティブなチャレンジを保存
+   */
+  saveActiveChallenge(challenge) {
+    const data = this.load();
+    data.activeChallenge = challenge;
+    this.save(data);
+    return data;
+  },
+  
+  /**
+   * アクティブなチャレンジを取得
+   */
+  getActiveChallenge() {
+    const data = this.load();
+    return data.activeChallenge || null;
+  },
+  
+  /**
+   * 設定を保存
+   */
+  saveSettings(settings) {
+    const data = this.load();
+    data.settings = { ...(data.settings || {}), ...settings };
+    this.save(data);
+    return data;
+  },
+  
+  /**
+   * 設定を取得
+   */
+  getSettings() {
+    const data = this.load();
+    return data.settings || {};
   }
 };
 

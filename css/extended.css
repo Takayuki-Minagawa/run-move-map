@@ -1,0 +1,1167 @@
+/* ===========================================
+   日本縦断チャレンジ - 追加スタイル v2.0
+   新機能用のスタイル定義
+   =========================================== */
+
+/* =========================================== 
+   ダークモード対応
+   =========================================== */
+
+body.dark-mode {
+  --bg-color: #1a1a2e;
+  --card-bg: #16213e;
+  --text-color: #e8e8e8;
+  --text-muted: #a0a0a0;
+  --border-color: #2d3a5a;
+  --shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .stat-item,
+body.dark-mode .history-item,
+body.dark-mode .badge-item,
+body.dark-mode .calendar-day,
+body.dark-mode .goal-card {
+  background: #1f2a48;
+}
+
+body.dark-mode .level-section {
+  background: linear-gradient(135deg, #2d3a5a 0%, #1f2a48 100%);
+}
+
+body.dark-mode .modal-content {
+  background: var(--card-bg);
+}
+
+body.dark-mode .modal-trivia {
+  background: var(--bg-color);
+}
+
+body.dark-mode input,
+body.dark-mode select {
+  background: var(--bg-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .tab-btn {
+  color: var(--text-muted);
+}
+
+body.dark-mode .tab-btn.active {
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+/* =========================================== 
+   ヘッダー拡張
+   =========================================== */
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+body.dark-mode .theme-toggle-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* =========================================== 
+   フォーム拡張（メモ・写真）
+   =========================================== */
+
+.form-group.full-width {
+  flex: 1 1 100%;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.photo-upload {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.photo-btn {
+  padding: 10px 20px;
+  border: 2px dashed var(--border-color);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.photo-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.photo-preview {
+  display: flex;
+  gap: 10px;
+}
+
+.photo-preview img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.photo-preview .remove-photo {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* =========================================== 
+   タブボタン拡張
+   =========================================== */
+
+.tab-buttons {
+  display: flex;
+  gap: 3px;
+  background: var(--border-color);
+  padding: 5px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 40px;
+  padding: 10px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1.2rem;
+}
+
+/* =========================================== 
+   グラフコンテナ
+   =========================================== */
+
+.chart-container {
+  position: relative;
+  height: 250px;
+  width: 100%;
+}
+
+.chart-container.small {
+  height: 200px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* =========================================== 
+   カレンダー
+   =========================================== */
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.calendar-nav {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.calendar-nav:hover {
+  background: var(--border-color);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 5px;
+}
+
+.weekday.sun { color: #ff6b6b; }
+.weekday.sat { color: #4ecdc4; }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--bg-color);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  min-height: 40px;
+}
+
+.calendar-day:hover:not(.empty):not(.future) {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.calendar-day.empty {
+  background: transparent;
+}
+
+.calendar-day.future {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.calendar-day.today {
+  border: 2px solid var(--primary-color);
+}
+
+.calendar-day.sun { color: #ff6b6b; }
+.calendar-day.sat { color: #4ecdc4; }
+
+.day-number {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.day-distance {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* 強度レベル */
+.calendar-day.level-1 { background: rgba(107, 203, 119, 0.3); }
+.calendar-day.level-2 { background: rgba(107, 203, 119, 0.5); }
+.calendar-day.level-3 { background: rgba(107, 203, 119, 0.7); }
+.calendar-day.level-4 { background: rgba(107, 203, 119, 0.9); color: white; }
+
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 15px;
+  font-size: 0.8rem;
+}
+
+.legend-box {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  background: var(--bg-color);
+}
+
+.legend-box.level-1 { background: rgba(107, 203, 119, 0.3); }
+.legend-box.level-2 { background: rgba(107, 203, 119, 0.5); }
+.legend-box.level-3 { background: rgba(107, 203, 119, 0.7); }
+.legend-box.level-4 { background: rgba(107, 203, 119, 0.9); }
+
+.calendar-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.calendar-stat {
+  text-align: center;
+}
+
+.calendar-stat .stat-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.calendar-stat .stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ヒートマップ */
+.heatmap-container {
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.heatmap-grid {
+  display: flex;
+  gap: 3px;
+}
+
+.heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.heatmap-day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--bg-color);
+}
+
+.heatmap-day.out-of-range {
+  visibility: hidden;
+}
+
+.heatmap-stats {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* =========================================== 
+   目標設定
+   =========================================== */
+
+.goals-container {
+  display: grid;
+  gap: 15px;
+}
+
+.goal-card {
+  padding: 15px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--border-color);
+}
+
+.goal-card.completed {
+  border-left-color: var(--success-color);
+}
+
+.goal-card.on-track {
+  border-left-color: var(--warning-color);
+}
+
+.goal-card.behind {
+  border-left-color: var(--primary-color);
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.goal-title {
+  font-weight: 600;
+}
+
+.goal-badge {
+  background: var(--success-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+.goal-progress-bar {
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--warning-color));
+  transition: width 0.5s ease;
+}
+
+.goal-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.goal-current {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.goal-remaining {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+.edit-goals-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border: 2px dashed var(--border-color);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.edit-goals-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* =========================================== 
+   チャレンジ
+   =========================================== */
+
+.challenge-selector h4 {
+  margin-bottom: 15px;
+}
+
+.challenge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.challenge-option {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.challenge-option:hover {
+  transform: translateX(5px);
+}
+
+.challenge-option .challenge-icon {
+  font-size: 2rem;
+}
+
+.challenge-details {
+  flex: 1;
+}
+
+.challenge-name {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.challenge-desc {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.challenge-difficulty {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 5px;
+}
+
+.challenge-difficulty.normal { background: var(--secondary-color); color: white; }
+.challenge-difficulty.hard { background: var(--primary-color); color: white; }
+.challenge-difficulty.extreme { background: #9b59b6; color: white; }
+
+.start-challenge-btn {
+  padding: 8px 15px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.start-challenge-btn:hover {
+  transform: scale(1.05);
+}
+
+.active-challenge {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fff9e6, #fff3cd);
+  border-radius: var(--radius-sm);
+}
+
+body.dark-mode .active-challenge {
+  background: linear-gradient(135deg, #3d3a2e, #2d2a1e);
+}
+
+.active-challenge .challenge-icon {
+  font-size: 3rem;
+}
+
+.active-challenge .challenge-info h4 {
+  margin: 0 0 5px 0;
+}
+
+.active-challenge .challenge-progress-bar {
+  height: 10px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.active-challenge .challenge-progress-fill {
+  height: 100%;
+  background: var(--success-color);
+}
+
+.active-challenge .challenge-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.challenge-completed {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 10px;
+  background: var(--success-color);
+  color: white;
+  border-radius: var(--radius-sm);
+  margin-top: 10px;
+}
+
+.abandon-challenge-btn {
+  padding: 8px 15px;
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
+/* =========================================== 
+   ルート選択
+   =========================================== */
+
+.route-selector h4 {
+  margin-bottom: 15px;
+}
+
+.route-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.route-option {
+  padding: 20px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.route-option.active {
+  border-color: var(--primary-color);
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.route-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.route-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.route-difficulty {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.route-difficulty.easy { background: var(--secondary-color); color: white; }
+.route-difficulty.normal { background: var(--warning-color); color: #333; }
+.route-difficulty.hard { background: var(--primary-color); color: white; }
+
+.route-description {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.route-info {
+  display: flex;
+  gap: 20px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.route-progress {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.route-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.route-progress-fill {
+  height: 100%;
+  background: var(--primary-color);
+}
+
+.route-progress-text {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.select-route-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.select-route-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* =========================================== 
+   バッジ拡張（カテゴリ別表示）
+   =========================================== */
+
+.badge-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+}
+
+.badge-stats-item {
+  text-align: center;
+}
+
+.badge-stats-item .value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.badge-stats-item .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.badges-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.badge-category {
+  padding: 15px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+}
+
+.badge-category-name {
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.badge-category .badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+/* =========================================== 
+   ソーシャル機能UI
+   =========================================== */
+
+.social-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.social-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.social-header h3 {
+  margin-bottom: 5px;
+}
+
+.social-header p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.social-feature {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.social-feature .feature-icon {
+  font-size: 3rem;
+}
+
+.social-feature .feature-content {
+  flex: 1;
+}
+
+.social-feature h4 {
+  margin: 0 0 10px 0;
+}
+
+.social-feature p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.social-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.google-btn {
+  background: #4285f4;
+  color: white;
+}
+
+.coming-soon-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 3px 10px;
+  background: var(--warning-color);
+  color: #333;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+/* フレンドプレビュー */
+.friend-preview {
+  margin: 15px 0;
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+}
+
+.friend-item.preview {
+  opacity: 0.6;
+}
+
+.friend-avatar {
+  font-size: 2rem;
+}
+
+.friend-info {
+  flex: 1;
+}
+
+.friend-name {
+  display: block;
+  font-weight: 500;
+}
+
+.friend-progress {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ランキングプレビュー */
+.ranking-preview {
+  margin: 15px 0;
+}
+
+.ranking-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.ranking-tab {
+  padding: 8px 15px;
+  border: none;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.ranking-tab.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 15px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+}
+
+.ranking-item.preview {
+  opacity: 0.6;
+}
+
+.ranking-item.is-me {
+  opacity: 1;
+  background: linear-gradient(135deg, #fff9e6, #fff3cd);
+}
+
+body.dark-mode .ranking-item.is-me {
+  background: linear-gradient(135deg, #3d3a2e, #2d2a1e);
+}
+
+.ranking-item .rank {
+  font-size: 1.2rem;
+  min-width: 30px;
+}
+
+.ranking-item .name {
+  flex: 1;
+}
+
+.ranking-item .distance {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* 外部アプリ連携 */
+.apps-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.app-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+}
+
+.app-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.app-info {
+  flex: 1;
+}
+
+.app-name {
+  display: block;
+  font-weight: 500;
+}
+
+.app-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.connect-btn {
+  padding: 6px 15px;
+  background: var(--border-color);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.connect-btn:disabled {
+  opacity: 0.5;
+}
+
+/* =========================================== 
+   設定拡張
+   =========================================== */
+
+.settings-input {
+  padding: 12px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  margin-right: 10px;
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.theme-select-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.theme-select-btn:hover,
+.theme-select-btn.active {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.language-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.lang-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lang-btn:hover,
+.lang-btn.active {
+  border-color: var(--primary-color);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* =========================================== 
+   目標設定モーダル
+   =========================================== */
+
+.modal-large {
+  max-width: 500px;
+}
+
+.goals-form {
+  text-align: left;
+}
+
+.goal-setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+
+.goal-setting label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.goal-setting input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.goal-setting input[type="number"] {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* =========================================== 
+   履歴拡張（メモ・写真表示）
+   =========================================== */
+
+.history-item {
+  position: relative;
+}
+
+.history-memo {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.history-photo {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-left: auto;
+}
+
+/* =========================================== 
+   フッター拡張
+   =========================================== */
+
+.footer-version {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* =========================================== 
+   レスポンシブ調整
+   =========================================== */
+
+@media (max-width: 600px) {
+  .social-feature {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .route-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .route-info {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .calendar-day {
+    min-height: 35px;
+  }
+  
+  .day-distance {
+    display: none;
+  }
+  
+  .goal-setting {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}

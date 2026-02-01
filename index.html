@@ -3,16 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff6b6b">
+  <meta name="description" content="走行距離・歩行距離を記録して日本地図上を旅するWebアプリ">
   <title>🗾 日本縦断チャレンジ</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/extended.css">
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗾</text></svg>">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <!-- エラーをページに表示するデバッグ用 -->
+  <script>
+    window.onerror = function(msg, url, line, col, error) {
+      var div = document.createElement('div');
+      div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:10px;z-index:99999;font-size:12px;';
+      div.innerHTML = '<strong>JS Error:</strong> ' + msg + '<br>File: ' + url + '<br>Line: ' + line;
+      document.body.appendChild(div);
+      return false;
+    };
+  </script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
     <!-- ヘッダー -->
     <header class="header">
-      <h1>🗾 日本縦断チャレンジ</h1>
-      <p>走って歩いて、沖縄から北海道へ！</p>
+      <div class="header-top">
+        <h1 data-i18n="app.title">🗾 日本縦断チャレンジ</h1>
+        <div class="header-actions">
+          <button id="theme-toggle" class="theme-toggle-btn" title="テーマ切替">🌙</button>
+        </div>
+      </div>
+      <p data-i18n="app.subtitle">走って歩いて、沖縄から北海道へ！</p>
     </header>
 
     <!-- 地図セクション -->
@@ -25,11 +47,11 @@
       <div class="progress-section">
         <div class="location-info">
           <div class="location-current">
-            📍 現在地: <span id="current-city">那覇</span>
+            📍 <span data-i18n="progress.current">現在地</span>: <span id="current-city">那覇</span>
           </div>
           <div class="location-next">
-            🎯 次の目的地: <span id="next-city">鹿児島</span>
-            （残り <span id="next-distance">650</span> km）
+            🎯 <span data-i18n="progress.next">次の目的地</span>: <span id="next-city">鹿児島</span>
+            （<span data-i18n="progress.remaining">残り</span> <span id="next-distance">650</span> km）
           </div>
         </div>
         <div class="progress-container">
@@ -37,7 +59,7 @@
             <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
           </div>
           <div class="progress-text">
-            全体進捗: <span id="progress-percent">0</span>% / 3,000km
+            <span data-i18n="progress.total">全体進捗</span>: <span id="progress-percent">0</span>% / <span id="total-route-distance">3,000</span>km
           </div>
         </div>
       </div>
@@ -50,7 +72,7 @@
           <div class="level-progress-bar">
             <div class="progress" id="level-progress" style="width: 0%"></div>
           </div>
-          <div class="level-next" id="next-level-distance">次のレベルまで 50 km</div>
+          <div class="level-next" id="next-level-distance"><span data-i18n="level.nextLevel">次のレベルまで</span> 50 km</div>
         </div>
       </div>
     </section>
@@ -60,69 +82,145 @@
       <div class="stats-grid">
         <div class="stat-item">
           <div class="stat-value"><span id="total-distance">0</span></div>
-          <div class="stat-label">累計距離 (km)</div>
+          <div class="stat-label" data-i18n="stats.totalDistance">累計距離 (km)</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">🔥 <span id="streak-days">0</span></div>
-          <div class="stat-label">連続日数</div>
+          <div class="stat-label" data-i18n="stats.streakDays">連続日数</div>
         </div>
         <div class="stat-item">
           <div class="stat-value"><span id="weekly-distance">0</span></div>
-          <div class="stat-label">今週 (km)</div>
+          <div class="stat-label" data-i18n="stats.weeklyDistance">今週 (km)</div>
         </div>
         <div class="stat-item">
           <div class="stat-value"><span id="total-records">0</span></div>
-          <div class="stat-label">記録回数</div>
+          <div class="stat-label" data-i18n="stats.totalRecords">記録回数</div>
         </div>
       </div>
     </section>
 
+    <!-- 目標進捗セクション（新機能） -->
+    <section class="card" id="goals-progress-section">
+      <div class="card-header">🎯 <span data-i18n="goals.title">目標進捗</span></div>
+      <div id="goals-display"></div>
+    </section>
+
     <!-- 記録フォーム -->
     <section class="card">
-      <div class="card-header">📝 距離を記録</div>
+      <div class="card-header">📝 <span data-i18n="form.title">距離を記録</span></div>
       <form id="record-form" class="form-section">
         <div class="form-row">
           <div class="form-group">
-            <label for="record-date">日付</label>
+            <label for="record-date" data-i18n="form.date">日付</label>
             <input type="date" id="record-date" required>
           </div>
           <div class="form-group">
-            <label for="record-distance">距離 (km)</label>
+            <label for="record-distance" data-i18n="form.distance">距離 (km)</label>
             <input type="number" id="record-distance" step="0.1" min="0.1" placeholder="5.0" required>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>種別</label>
+            <label data-i18n="form.type">種別</label>
             <div class="type-toggle">
               <div class="type-option">
                 <input type="radio" name="type" id="type-run" value="run" checked>
-                <label for="type-run">🏃 ランニング</label>
+                <label for="type-run" data-i18n="form.run">🏃 ランニング</label>
               </div>
               <div class="type-option">
                 <input type="radio" name="type" id="type-walk" value="walk">
-                <label for="type-walk">🚶 ウォーキング</label>
+                <label for="type-walk" data-i18n="form.walk">🚶 ウォーキング</label>
               </div>
             </div>
           </div>
         </div>
-        <button type="submit" class="submit-btn">記録する</button>
+        <!-- メモ機能（新機能） -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="record-memo" data-i18n="form.memo">一言メモ（任意）</label>
+            <input type="text" id="record-memo" placeholder="今日の調子は..." maxlength="100">
+          </div>
+        </div>
+        <!-- 写真機能（新機能） -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label data-i18n="form.photo">📷 写真を追加</label>
+            <div class="photo-upload">
+              <input type="file" id="record-photo" accept="image/*" style="display: none;" onchange="App.handlePhotoUpload(event)">
+              <button type="button" class="photo-btn" id="photo-btn" onclick="document.getElementById('record-photo').click()">📷 写真を選択</button>
+              <div id="photo-preview" class="photo-preview"></div>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" data-i18n="form.submit">記録する</button>
       </form>
     </section>
 
     <!-- タブセクション -->
     <section class="tabs">
       <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="history-tab">📜 履歴</button>
-        <button class="tab-btn" data-tab="badges-tab">🏅 バッジ</button>
-        <button class="tab-btn" data-tab="settings-tab">⚙️ 設定</button>
+        <button class="tab-btn active" data-tab="history-tab">📜</button>
+        <button class="tab-btn" data-tab="calendar-tab">📅</button>
+        <button class="tab-btn" data-tab="stats-tab">📊</button>
+        <button class="tab-btn" data-tab="badges-tab">🏅</button>
+        <button class="tab-btn" data-tab="goals-tab">🎯</button>
+        <button class="tab-btn" data-tab="routes-tab">🗺️</button>
+        <button class="tab-btn" data-tab="social-tab">👥</button>
+        <button class="tab-btn" data-tab="settings-tab">⚙️</button>
       </div>
 
       <!-- 履歴タブ -->
       <div class="tab-content active" id="history-tab">
         <div class="card">
+          <div class="card-header" data-i18n="tab.history">📜 履歴</div>
           <div class="history-list" id="history-list">
-            <p class="empty-message">まだ記録がありません</p>
+            <p class="empty-message" data-i18n="history.empty">まだ記録がありません</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- カレンダータブ（新機能） -->
+      <div class="tab-content" id="calendar-tab">
+        <div class="card">
+          <div class="card-header" data-i18n="tab.calendar">📅 カレンダー</div>
+          <div id="calendar-container"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">📊 年間ヒートマップ</div>
+          <div id="heatmap-container"></div>
+        </div>
+      </div>
+
+      <!-- 統計タブ（新機能） -->
+      <div class="tab-content" id="stats-tab">
+        <div class="card">
+          <div class="card-header" data-i18n="charts.weekly">📊 週間距離</div>
+          <div class="chart-container">
+            <canvas id="weekly-chart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="charts.monthly">📈 月間推移</div>
+          <div class="chart-container">
+            <canvas id="monthly-chart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="charts.type">🏃🚶 種別割合</div>
+          <div class="chart-container small">
+            <canvas id="type-chart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="charts.cumulative">📉 累計推移</div>
+          <div class="chart-container">
+            <canvas id="cumulative-chart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="charts.dayofweek">📅 曜日別平均</div>
+          <div class="chart-container">
+            <canvas id="dayofweek-chart"></canvas>
           </div>
         </div>
       </div>
@@ -131,27 +229,73 @@
       <div class="tab-content" id="badges-tab">
         <div class="card">
           <div class="badges-header">
-            <div class="card-header">🏅 獲得バッジ</div>
+            <div class="card-header" data-i18n="badges.title">🏅 獲得バッジ</div>
             <div class="badge-count" id="badge-count">0 / 20</div>
           </div>
-          <div class="badges-grid" id="badges-list"></div>
+          <div class="badge-stats" id="badge-stats"></div>
+          <div class="badges-categories" id="badges-list"></div>
         </div>
+      </div>
+
+      <!-- 目標・チャレンジタブ（新機能） -->
+      <div class="tab-content" id="goals-tab">
+        <div class="card">
+          <div class="card-header" data-i18n="goals.title">🎯 目標設定</div>
+          <div id="goals-settings"></div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="challenge.title">🏆 ミニチャレンジ</div>
+          <div id="challenge-selector"></div>
+        </div>
+      </div>
+
+      <!-- ルート選択タブ（新機能） -->
+      <div class="tab-content" id="routes-tab">
+        <div class="card">
+          <div class="card-header" data-i18n="route.title">🗺️ コース選択</div>
+          <div id="route-selector"></div>
+        </div>
+      </div>
+
+      <!-- ソーシャルタブ（新機能） -->
+      <div class="tab-content" id="social-tab">
+        <div id="social-container"></div>
       </div>
 
       <!-- 設定タブ -->
       <div class="tab-content" id="settings-tab">
         <div class="card">
-          <div class="card-header">⚙️ データ管理</div>
+          <div class="card-header" data-i18n="settings.dataManagement">⚙️ データ管理</div>
           <div class="settings-section">
             <button class="settings-btn" id="export-btn">
-              📤 データをエクスポート
+              📤 <span data-i18n="settings.export">データをエクスポート</span>
             </button>
             <button class="settings-btn" id="import-btn">
-              📥 データをインポート
+              📥 <span data-i18n="settings.import">データをインポート</span>
             </button>
             <button class="settings-btn danger" id="reset-btn">
-              🗑️ データをリセット
+              🗑️ <span data-i18n="settings.reset">データをリセット</span>
             </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="settings.theme">🎨 テーマ</div>
+          <div class="settings-section">
+            <div class="theme-buttons">
+              <button class="theme-select-btn" data-theme="light">☀️ ライト</button>
+              <button class="theme-select-btn" data-theme="dark">🌙 ダーク</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" data-i18n="settings.language">🌐 言語</div>
+          <div class="settings-section" id="language-selector"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">🎂 誕生日（バッジ用）</div>
+          <div class="settings-section">
+            <input type="date" id="birthday-input" class="settings-input">
+            <button class="settings-btn" id="save-birthday-btn">保存</button>
           </div>
         </div>
       </div>
@@ -159,7 +303,8 @@
 
     <!-- フッター -->
     <footer class="footer">
-      <p>🗾 日本縦断チャレンジ - 毎日の一歩が旅になる</p>
+      <p data-i18n="footer.tagline">🗾 日本縦断チャレンジ - 毎日の一歩が旅になる</p>
+      <p class="footer-version">v2.0.0</p>
     </footer>
   </div>
 
@@ -175,7 +320,7 @@
         桜島が見える絶景の街。黒豚やさつま揚げが美味しい！
       </div>
       <p class="modal-landmark" id="modal-city-landmark">🏛️ 桜島</p>
-      <button class="modal-btn modal-close">すごい！</button>
+      <button class="modal-btn modal-close" data-i18n="modal.awesome">すごい！</button>
     </div>
   </div>
 
@@ -185,14 +330,53 @@
     <div class="modal-content">
       <button class="modal-close">×</button>
       <div class="modal-icon">🏆</div>
-      <h2 class="modal-title">日本縦断達成！</h2>
-      <p class="modal-subtitle">おめでとうございます！</p>
+      <h2 class="modal-title" data-i18n="modal.goalReached">日本縦断達成！</h2>
+      <p class="modal-subtitle" data-i18n="modal.congratulations">おめでとうございます！</p>
       <div class="modal-trivia">
-        あなたは3,000kmを走破し、沖縄から北海道まで日本を縦断しました！
-        これは素晴らしい偉業です！
+        あなたは日本縦断マスターです！素晴らしい偉業です！
       </div>
-      <p class="modal-landmark">🎊 あなたは日本縦断マスターです！</p>
-      <button class="modal-btn modal-close">ありがとう！</button>
+      <p class="modal-landmark">🎊 <span data-i18n="modal.goalMessage">あなたは日本縦断マスターです！</span></p>
+      <button class="modal-btn modal-close" data-i18n="modal.thanks">ありがとう！</button>
+    </div>
+  </div>
+
+  <!-- 目標設定モーダル（新機能） -->
+  <div class="modal" id="goals-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-large">
+      <button class="modal-close">×</button>
+      <h2 class="modal-title">🎯 目標を編集</h2>
+      <form id="goals-form" class="goals-form">
+        <div class="goal-setting">
+          <label>
+            <input type="checkbox" id="goal-monthly-enabled" checked>
+            📅 月間目標
+          </label>
+          <input type="number" id="goal-monthly-distance" value="100" min="1"> km
+        </div>
+        <div class="goal-setting">
+          <label>
+            <input type="checkbox" id="goal-weekly-enabled" checked>
+            📆 週間目標
+          </label>
+          <input type="number" id="goal-weekly-distance" value="30" min="1"> km
+        </div>
+        <div class="goal-setting">
+          <label>
+            <input type="checkbox" id="goal-streak-enabled" checked>
+            🔥 連続日数目標
+          </label>
+          <input type="number" id="goal-streak-days" value="7" min="1"> 日
+        </div>
+        <div class="goal-setting">
+          <label>
+            <input type="checkbox" id="goal-frequency-enabled" checked>
+            🎯 週間回数目標
+          </label>
+          <input type="number" id="goal-frequency-times" value="3" min="1"> 回/週
+        </div>
+        <button type="submit" class="modal-btn">保存</button>
+      </form>
     </div>
   </div>
 
@@ -206,7 +390,60 @@
   <script src="js/routes.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/achievements.js"></script>
+  <script src="js/extended-achievements.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/multi-routes.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/social.js"></script>
   <script src="js/app.js"></script>
+  
+  <!-- タブ切り替えのフォールバック（確実に動作させる） -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🔧 Fallback tab listeners setup');
+      
+      // タブボタンのクリックイベント
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = function() {
+          const tabId = this.getAttribute('data-tab');
+          console.log('Tab clicked (fallback):', tabId);
+          
+          if (!tabId) return;
+          
+          // 全てのタブボタンからactiveを削除
+          document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+          });
+          // クリックされたボタンにactiveを追加
+          this.classList.add('active');
+          
+          // 全てのタブコンテンツを非表示
+          document.querySelectorAll('.tab-content').forEach(c => {
+            c.classList.remove('active');
+          });
+          // 対応するコンテンツを表示
+          const content = document.getElementById(tabId);
+          if (content) {
+            content.classList.add('active');
+          }
+        };
+      });
+    });
+  </script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('✅ Service Worker registered'))
+          .catch(err => console.log('❌ Service Worker registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>

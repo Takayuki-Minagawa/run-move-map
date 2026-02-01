@@ -1,6 +1,6 @@
 {
   "name": "run-move-map",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "日本縦断チャレンジ - 走行距離・歩行距離を記録して日本地図上を旅するWebアプリ",
   "main": "index.html",
   "scripts": {

@@ -1,33 +1,126 @@
 /**
- * メインアプリケーションロジック
+ * メインアプリケーションロジック v2.0
+ * 拡張機能対応版
  */
 
 const App = {
   data: null,
+  modules: {},
   
   /**
    * アプリ初期化
    */
   async init() {
-    // データ読み込み
-    this.data = Storage.load();
+    console.log('🚀 App.init() 開始');
     
-    // 地図初期化
-    await JapanMap.init('map-container');
-    
-    // UI初期化
-    this.initForm();
-    this.initEventListeners();
-    
-    // 表示更新
-    this.updateUI();
-    
-    // 初回訪問メッセージ
-    if (this.data.records.length === 0) {
-      this.showWelcomeMessage();
+    try {
+      // データ読み込み
+      this.data = Storage.load();
+      console.log('✅ Storage loaded');
+      
+      // テーマ初期化（最優先）
+      if (typeof Theme !== 'undefined') {
+        Theme.init();
+        this.modules.theme = Theme;
+        console.log('✅ Theme initialized');
+      }
+      
+      // 多言語初期化
+      if (typeof I18N !== 'undefined') {
+        I18N.init();
+        this.modules.i18n = I18N;
+        console.log('✅ I18N initialized');
+      }
+      
+      // 地図初期化
+      if (typeof JapanMap !== 'undefined') {
+        await JapanMap.init('map-container');
+        console.log('✅ JapanMap initialized');
+      }
+      
+      // ルート管理初期化
+      if (typeof RouteManager !== 'undefined') {
+        RouteManager.init();
+        this.modules.routes = RouteManager;
+        console.log('✅ RouteManager initialized');
+      }
+      
+      // UI初期化
+      this.initForm();
+      this.initEventListeners();
+      console.log('✅ Event listeners initialized');
+      
+      // 表示更新
+      this.updateUI();
+      console.log('✅ UI updated');
+      
+      // 追加モジュール初期化
+      this.initExtendedModules();
+      console.log('✅ Extended modules initialized');
+      
+      // Service Worker登録
+      this.registerServiceWorker();
+      
+      // 初回訪問メッセージ
+      if (this.data.records.length === 0) {
+        this.showWelcomeMessage();
+      }
+      
+      console.log('🗾 日本縦断チャレンジ v2.0 アプリ起動完了！');
+    } catch (error) {
+      console.error('❌ App.init() エラー:', error);
+    }
+  },
+  
+  /**
+   * 拡張モジュール初期化
+   */
+  initExtendedModules() {
+    // カレンダー初期化
+    if (typeof Calendar !== 'undefined') {
+      Calendar.init('calendar-container', this.data.records);
+      this.modules.calendar = Calendar;
     }
     
-    console.log('🗾 日本縦断チャレンジ アプリ起動完了！');
+    // グラフ初期化
+    if (typeof Charts !== 'undefined') {
+      Charts.init();
+      // 初期グラフを描画
+      const stats = Storage.getStatistics();
+      Charts.updateAllCharts(this.data.records, stats);
+      this.modules.charts = Charts;
+    }
+    
+    // 目標初期化
+    if (typeof Goals !== 'undefined') {
+      Goals.init('goals-settings', 'challenge-selector', this.data.records);
+      this.modules.goals = Goals;
+    }
+    
+    // 拡張バッジ初期化
+    if (typeof ExtendedAchievements !== 'undefined') {
+      this.modules.extendedAchievements = ExtendedAchievements;
+    }
+    
+    // ソーシャル機能UI初期化
+    if (typeof Social !== 'undefined') {
+      Social.init();
+      this.modules.social = Social;
+    }
+  },
+  
+  /**
+   * Service Worker登録
+   */
+  async registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/sw.js');
+        console.log('✅ Service Worker registered');
+      } catch (error) {
+        console.log('Service Worker registration failed:', error);
+      }
+    }
   },
   
   /**
@@ -53,7 +146,12 @@ const App = {
     
     // タブ切り替え
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+      btn.addEventListener('click', (e) => {
+        const tabBtn = e.target.closest('.tab-btn');
+        if (tabBtn && tabBtn.dataset.tab) {
+          this.switchTab(tabBtn.dataset.tab);
+        }
+      });
     });
     
     // エクスポート/インポート
@@ -76,6 +174,109 @@ const App = {
     document.querySelectorAll('.modal-close, .modal-overlay').forEach(el => {
       el.addEventListener('click', () => this.closeModal());
     });
+    
+    // テーマ切り替えボタン
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle && this.modules.theme) {
+      themeToggle.addEventListener('click', () => {
+        this.modules.theme.toggle();
+        this.updateThemeButtonIcon();
+      });
+    }
+    
+    // テーマ選択ボタン
+    document.querySelectorAll('.theme-select-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.dataset.theme;
+        if (this.modules.theme) {
+          this.modules.theme.setTheme(theme);
+          this.updateThemeButtons();
+        }
+      });
+    });
+    
+    // 言語選択ボタン
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.lang;
+        if (this.modules.i18n) {
+          this.modules.i18n.setLanguage(lang);
+          this.updateLanguageButtons();
+        }
+      });
+    });
+    
+    // 目標設定ボタン
+    const editGoalsBtn = document.getElementById('edit-goals-btn');
+    if (editGoalsBtn) {
+      editGoalsBtn.addEventListener('click', () => this.openGoalsModal());
+    }
+    
+    // 目標保存ボタン
+    const saveGoalsBtn = document.getElementById('save-goals-btn');
+    if (saveGoalsBtn) {
+      saveGoalsBtn.addEventListener('click', () => this.saveGoals());
+    }
+    
+    // 誕生日保存ボタン
+    const saveBirthdayBtn = document.getElementById('save-birthday-btn');
+    if (saveBirthdayBtn) {
+      saveBirthdayBtn.addEventListener('click', () => this.saveBirthday());
+    }
+    
+    // 写真アップロード
+    const photoInput = document.getElementById('record-photo');
+    if (photoInput) {
+      photoInput.addEventListener('change', (e) => this.handlePhotoUpload(e));
+    }
+    
+    // 写真選択ボタン
+    const photoBtn = document.getElementById('photo-btn');
+    if (photoBtn && photoInput) {
+      photoBtn.addEventListener('click', () => photoInput.click());
+    }
+    
+    // 目標フォーム送信
+    const goalsForm = document.getElementById('goals-form');
+    if (goalsForm) {
+      goalsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.saveGoals();
+      });
+    }
+    
+    // 初期UI状態更新
+    this.updateThemeButtons();
+    this.updateLanguageButtons();
+    this.initLanguageSelector();
+  },
+  
+  /**
+   * 言語セレクターを初期化
+   */
+  initLanguageSelector() {
+    const container = document.getElementById('language-selector');
+    if (container) {
+      container.innerHTML = `
+        <div class="language-selector">
+          <button class="lang-btn" data-lang="ja">🇯🇵 日本語</button>
+          <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+        </div>
+      `;
+      
+      // 言語ボタンにイベント追加
+      container.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          if (this.modules.i18n) {
+            this.modules.i18n.setLanguage(lang);
+            this.updateLanguageButtons();
+          }
+        });
+      });
+      
+      this.updateLanguageButtons();
+    }
   },
   
   /**
@@ -88,6 +289,8 @@ const App = {
     const date = form.querySelector('#record-date').value;
     const distance = parseFloat(form.querySelector('#record-distance').value);
     const type = form.querySelector('input[name="type"]:checked').value;
+    const memo = form.querySelector('#record-memo')?.value || '';
+    const photo = this.currentPhoto || null;
     
     if (!date || isNaN(distance) || distance <= 0) {
       this.showToast('日付と距離を正しく入力してください', 'error');
@@ -97,8 +300,8 @@ const App = {
     // 記録前の累計距離を保存
     const oldDistance = this.data.totalDistance;
     
-    // 記録を追加
-    this.data = Storage.addRecord({ date, distance, type });
+    // 記録を追加（メモと写真も含む）
+    this.data = Storage.addRecord({ date, distance, type, memo, photo });
     
     // 新たに到達した都市をチェック
     const newCities = getNewlyReachedCities(oldDistance, this.data.totalDistance);
@@ -117,6 +320,18 @@ const App = {
       this.showBadgeEarnedToast(badge);
     });
     
+    // 拡張バッジもチェック
+    if (this.modules.extendedAchievements) {
+      const newExtendedBadges = this.modules.extendedAchievements.checkNewBadges(this.data);
+      newExtendedBadges.forEach(badge => {
+        if (!this.data.earnedBadges.includes(badge.id)) {
+          Storage.earnBadge(badge.id);
+          this.data.earnedBadges.push(badge.id);
+          this.showBadgeEarnedToast(badge);
+        }
+      });
+    }
+    
     // 完走チェック
     if (this.data.totalDistance >= 3000 && oldDistance < 3000) {
       this.showGoalModal();
@@ -126,11 +341,79 @@ const App = {
     // UI更新
     this.updateUI();
     
+    // 拡張モジュール更新
+    this.updateExtendedModules();
+    
     // フォームリセット
     form.querySelector('#record-distance').value = '';
+    const memoInput = form.querySelector('#record-memo');
+    if (memoInput) memoInput.value = '';
+    this.clearPhotoPreview();
     
     // 成功メッセージ
     this.showToast(`${distance}km を記録しました！ ${type === 'run' ? '🏃' : '🚶'}`, 'success');
+  },
+  
+  /**
+   * 拡張モジュール更新
+   */
+  updateExtendedModules() {
+    if (this.modules.calendar) {
+      this.modules.calendar.init('calendar-container', this.data.records);
+    }
+    if (this.modules.charts) {
+      const stats = Storage.getStatistics();
+      this.modules.charts.updateAllCharts(this.data.records, stats);
+    }
+    if (this.modules.goals) {
+      this.modules.goals.init('goals-settings', 'challenge-selector', this.data.records);
+    }
+  },
+
+  /**
+   * 写真アップロード処理
+   */
+  handlePhotoUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (file.size > 500000) { // 500KB制限
+      this.showToast('写真は500KB以下にしてください', 'error');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      this.currentPhoto = event.target.result;
+      this.showPhotoPreview(this.currentPhoto);
+    };
+    reader.readAsDataURL(file);
+  },
+  
+  /**
+   * 写真プレビュー表示
+   */
+  showPhotoPreview(dataUrl) {
+    const preview = document.getElementById('photo-preview');
+    if (preview) {
+      preview.innerHTML = `
+        <div style="position: relative; display: inline-block;">
+          <img src="${dataUrl}" alt="プレビュー">
+          <button class="remove-photo" onclick="App.clearPhotoPreview()">✕</button>
+        </div>
+      `;
+    }
+  },
+  
+  /**
+   * 写真プレビュークリア
+   */
+  clearPhotoPreview() {
+    this.currentPhoto = null;
+    const preview = document.getElementById('photo-preview');
+    if (preview) preview.innerHTML = '';
+    const input = document.getElementById('record-photo');
+    if (input) input.value = '';
   },
   
   /**
@@ -331,6 +614,8 @@ const App = {
    * タブ切り替え
    */
   switchTab(tabId) {
+    if (!tabId) return;
+    
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tabId);
     });
@@ -338,8 +623,34 @@ const App = {
     document.querySelectorAll('.tab-content').forEach(content => {
       content.classList.toggle('active', content.id === tabId);
     });
+    
+    // 統計タブの場合、グラフを再描画
+    if (tabId === 'stats-tab' && this.modules.charts) {
+      const stats = Storage.getStatistics();
+      this.modules.charts.updateAllCharts(this.data.records, stats);
+    }
+    
+    // カレンダータブの場合、カレンダーを再描画
+    if (tabId === 'calendar-tab' && this.modules.calendar) {
+      this.modules.calendar.init('calendar-container', this.data.records);
+    }
+    
+    // 目標タブの場合、目標を再描画
+    if (tabId === 'goals-tab' && this.modules.goals) {
+      this.modules.goals.init('goals-settings', 'challenge-selector', this.data.records);
+    }
+    
+    // ルートタブの場合、ルートを再描画
+    if (tabId === 'routes-tab' && this.modules.routes) {
+      this.modules.routes.init();
+    }
+    
+    // ソーシャルタブの場合
+    if (tabId === 'social-tab' && this.modules.social) {
+      this.modules.social.init();
+    }
   },
-  
+
   /**
    * データエクスポート
    */
@@ -503,6 +814,106 @@ const App = {
     const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
     const weekday = weekdays[date.getDay()];
     return `${month}/${day} (${weekday})`;
+  },
+  
+  /**
+   * テーマボタンアイコン更新
+   */
+  updateThemeButtonIcon() {
+    const btn = document.getElementById('theme-toggle');
+    if (btn && this.modules.theme) {
+      btn.textContent = this.modules.theme.current === 'dark' ? '☀️' : '🌙';
+    }
+  },
+  
+  /**
+   * テーマボタン状態更新
+   */
+  updateThemeButtons() {
+    const current = this.modules.theme?.current || 'light';
+    document.querySelectorAll('.theme-select-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === current);
+    });
+    this.updateThemeButtonIcon();
+  },
+  
+  /**
+   * 言語ボタン状態更新
+   */
+  updateLanguageButtons() {
+    const current = this.modules.i18n?.currentLanguage || 'ja';
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === current);
+    });
+  },
+  
+  /**
+   * 目標設定モーダルを開く
+   */
+  openGoalsModal() {
+    const modal = document.getElementById('goals-modal');
+    if (modal) {
+      // 現在の目標値をフォームに反映
+      const goals = Storage.load().goals || {};
+      const monthlyInput = document.getElementById('goal-monthly-distance');
+      const weeklyInput = document.getElementById('goal-weekly-distance');
+      const streakInput = document.getElementById('goal-streak');
+      
+      if (monthlyInput && goals.monthly) {
+        monthlyInput.value = goals.monthly.target;
+        document.getElementById('goal-monthly-enabled').checked = goals.monthly.enabled;
+      }
+      if (weeklyInput && goals.weekly) {
+        weeklyInput.value = goals.weekly.target;
+        document.getElementById('goal-weekly-enabled').checked = goals.weekly.enabled;
+      }
+      if (streakInput && goals.streak) {
+        streakInput.value = goals.streak.target;
+        document.getElementById('goal-streak-enabled').checked = goals.streak.enabled;
+      }
+      
+      modal.classList.add('show');
+    }
+  },
+  
+  /**
+   * 目標保存
+   */
+  saveGoals() {
+    const goals = {
+      monthly: {
+        enabled: document.getElementById('goal-monthly-enabled')?.checked || false,
+        target: parseFloat(document.getElementById('goal-monthly-distance')?.value) || 100
+      },
+      weekly: {
+        enabled: document.getElementById('goal-weekly-enabled')?.checked || false,
+        target: parseFloat(document.getElementById('goal-weekly-distance')?.value) || 30
+      },
+      streak: {
+        enabled: document.getElementById('goal-streak-enabled')?.checked || false,
+        target: parseInt(document.getElementById('goal-streak')?.value) || 7
+      }
+    };
+    
+    Storage.saveGoals(goals);
+    this.closeModal();
+    
+    if (this.modules.goals) {
+      this.modules.goals.init(this.data);
+    }
+    
+    this.showToast('目標を保存しました！', 'success');
+  },
+  
+  /**
+   * 誕生日保存
+   */
+  saveBirthday() {
+    const input = document.getElementById('birthday-input');
+    if (input && input.value) {
+      Storage.saveBirthday(input.value);
+      this.showToast('誕生日を保存しました！', 'success');
+    }
   }
 };
 

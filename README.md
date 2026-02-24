@@ -2,7 +2,7 @@
 
 走行距離・歩行距離を記録して、日本地図上を沖縄から北海道まで旅するWebアプリケーションです。
 
-![Version](https://img.shields.io/badge/version-2.0.1-blue)
+![Version](https://img.shields.io/badge/version-2.0.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-ready-purple)
 
@@ -307,6 +307,12 @@ open http://localhost:8080
 ```
 
 ## 📝 更新ログ
+
+### v2.0.2 (2026-02-24)
+🔧 **UX改善**
+
+#### 改善
+- 🚫 距離入力フォームにオートコンプリートを無効化（`autocomplete="off"` 追加）。ブラウザが過去の入力値を候補表示することで生じる誤入力を防止。
 
 ### v2.0.1 (2026-02-01)
 🔧 **バグ修正・改善**

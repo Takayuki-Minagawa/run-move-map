@@ -678,8 +678,8 @@ const App = {
     }
     
     // ルートタブの場合、ルートを再描画
-    if (tabId === 'routes-tab' && this.modules.routes) {
-      this.modules.routes.init();
+    if (tabId === 'routes-tab' && typeof RouteManager !== 'undefined') {
+      RouteManager.renderRouteSelector('route-selector', RouteManager.currentRouteId, this.data.totalDistance);
     }
     
     // ソーシャルタブの場合

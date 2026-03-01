@@ -44,9 +44,7 @@ const Charts = {
         datasets: [{
           label: '距離 (km)',
           data: weekData.distances,
-          backgroundColor: weekData.distances.map((d, i) => {
-            const today = new Date().getDay();
-            const dayIndex = (today - 6 + i + 7) % 7;
+          backgroundColor: weekData.distances.map((_, i) => {
             return i === 6 ? 'rgba(255, 107, 107, 0.8)' : 'rgba(78, 205, 196, 0.6)';
           }),
           borderRadius: 6

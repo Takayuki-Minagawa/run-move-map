@@ -21,6 +21,18 @@ module.exports = {
     LEVELS: 'readonly',
     JapanMap: 'readonly',
     App: 'readonly',
+    // v2.0 拡張モジュール
+    Theme: 'readonly',
+    I18N: 'readonly',
+    Calendar: 'readonly',
+    Charts: 'readonly',
+    Goals: 'readonly',
+    ExtendedAchievements: 'readonly',
+    Social: 'readonly',
+    // 外部ライブラリ
+    Chart: 'readonly',
+    // v2.0.3
+    CloudBackup: 'readonly',
   },
   rules: {
     // エラー

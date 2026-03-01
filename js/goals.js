@@ -308,7 +308,7 @@ const Goals = {
         completed = current >= challenge.target;
         break;
         
-      case 'streak':
+      case 'streak': {
         // 連続日数をカウント
         const dates = [...new Set(challengeRecords.map(r => r.date))].sort();
         let streak = 0;
@@ -334,8 +334,9 @@ const Goals = {
         current = maxStreak;
         completed = current >= challenge.target;
         break;
+      }
         
-      case 'weekend':
+      case 'weekend': {
         // 週末の記録のみカウント
         const weekendRecords = challengeRecords.filter(r => {
           const day = new Date(r.date).getDay();
@@ -344,8 +345,9 @@ const Goals = {
         current = weekendRecords.reduce((sum, r) => sum + r.distance, 0);
         completed = current >= challenge.target;
         break;
+      }
         
-      case 'single_day':
+      case 'single_day': {
         // 1日の最大距離
         const dayTotals = {};
         challengeRecords.forEach(r => {
@@ -355,6 +357,7 @@ const Goals = {
         current = Math.max(0, ...Object.values(dayTotals));
         completed = current >= challenge.target;
         break;
+      }
         
       default:
         current = challengeRecords.length;
@@ -457,12 +460,6 @@ const Goals = {
     
     // アクティブなチャレンジがある場合
     if (activeChallenge && challengeProgress) {
-      const difficultyColors = {
-        normal: '#4ecdc4',
-        hard: '#ff6b6b',
-        extreme: '#9b59b6'
-      };
-      
       html = `
         <div class="active-challenge">
           <div class="challenge-icon">${challengeProgress.challenge.icon}</div>

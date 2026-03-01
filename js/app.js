@@ -973,8 +973,26 @@ const App = {
       // File System Access API 非対応ブラウザ（Firefox / Safari 等）
       const card = document.getElementById('backup-settings-card');
       if (card) {
+        const reason = status.reason || this.modules.cloudBackup.getUnsupportedReason?.();
+        let detail =
+          '⚠️ この環境ではバックアップ保存先機能を利用できません。<br>手動エクスポート/インポートでデータを保護できます。';
+
+        if (reason === 'insecure-context') {
+          detail =
+            '⚠️ 安全な接続で開かれていないため利用できません。<br>' +
+            'Edgeでも <code>https://</code> または <code>http://localhost</code> で開く必要があります。';
+        } else if (reason === 'not-top-level') {
+          detail =
+            '⚠️ 埋め込み表示（iframe）では利用できません。<br>' +
+            'このページを新しいタブで直接開いてください。';
+        } else if (reason === 'api-unavailable') {
+          detail =
+            '⚠️ このブラウザで File System Access API が無効です。<br>' +
+            'Edge/Chrome 最新版で再度お試しください。';
+        }
+
         card.querySelector('.settings-section').innerHTML =
-          '<p style="color:var(--text-secondary);font-size:0.9em;">⚠️ このブラウザはバックアップパス機能に対応していません。<br>Chrome / Edge をご利用ください。<br>手動エクスポート/インポートでデータを保護できます。</p>';
+          `<p style="color:var(--text-secondary);font-size:0.9em;">${detail}</p>`;
       }
       return;
     }
@@ -1018,6 +1036,12 @@ const App = {
       await this.modules.cloudBackup.saveBackup(Storage.load());
       this.showToast('バックアップ保存先を設定しました ✅', 'success');
       if (fromSetupModal) this.closeBackupSetupModal();
+      return;
+    }
+
+    const error = this.modules.cloudBackup.lastError;
+    if (error && error.name !== 'AbortError') {
+      this.showToast('保存先の選択に失敗しました。Edgeを最新版に更新し、https/localhost で開いてください。', 'error');
     } else if (!fromSetupModal) {
       this.showToast('保存先の選択がキャンセルされました', 'info');
     }

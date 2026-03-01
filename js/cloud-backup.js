@@ -19,6 +19,10 @@ const CloudBackup = {
 
   /** File System Access API が使えるか */
   isSupported: false,
+  /** 非対応時の理由 */
+  unsupportedReason: null,
+  /** 直近の保存先選択エラー */
+  lastError: null,
 
   // ─────────────────────────────────────────────────────────
   // 公開 API
@@ -29,8 +33,9 @@ const CloudBackup = {
    * @returns {{ isSupported: boolean, hasHandle: boolean }}
    */
   async init() {
-    this.isSupported =
-      typeof window !== 'undefined' && 'showSaveFilePicker' in window;
+    this.unsupportedReason = this._detectUnsupportedReason();
+    this.isSupported = this.unsupportedReason === null;
+    this.lastError = null;
 
     if (this.isSupported) {
       this.fileHandle = await this._loadHandle();
@@ -39,6 +44,7 @@ const CloudBackup = {
     return {
       isSupported: this.isSupported,
       hasHandle: !!this.fileHandle,
+      reason: this.unsupportedReason,
     };
   },
 
@@ -51,7 +57,8 @@ const CloudBackup = {
     if (!this.isSupported) return false;
 
     try {
-      const handle = await window.showSaveFilePicker({
+      this.lastError = null;
+      const pickerOptions = {
         suggestedName: 'japan-journey-backup.json',
         types: [
           {
@@ -60,12 +67,17 @@ const CloudBackup = {
           },
         ],
         startIn: 'documents',
-      });
+      };
+      const handle = await this._showSaveFilePickerWithFallback(pickerOptions);
 
       this.fileHandle = handle;
       await this._saveHandle(handle);
       return true;
     } catch (e) {
+      this.lastError = {
+        name: e?.name || 'Error',
+        message: e?.message || 'Unknown error',
+      };
       if (e.name !== 'AbortError') {
         console.error('保存先の選択に失敗しました:', e);
       }
@@ -124,6 +136,14 @@ const CloudBackup = {
   },
 
   /**
+   * 非対応理由を返す
+   * @returns {string|null}
+   */
+  getUnsupportedReason() {
+    return this.unsupportedReason;
+  },
+
+  /**
    * バックアップ設定をリセットする
    */
   async clearBackupPath() {
@@ -134,6 +154,38 @@ const CloudBackup = {
   // ─────────────────────────────────────────────────────────
   // プライベートメソッド
   // ─────────────────────────────────────────────────────────
+
+  /**
+   * 利用不可の理由を判定する
+   * @returns {string|null}
+   */
+  _detectUnsupportedReason() {
+    if (typeof window === 'undefined') return 'no-window';
+    if (!window.isSecureContext) return 'insecure-context';
+    if (window.top !== window.self) return 'not-top-level';
+    if (!('showSaveFilePicker' in window)) return 'api-unavailable';
+    if (typeof indexedDB === 'undefined') return 'indexeddb-unavailable';
+    return null;
+  },
+
+  /**
+   * 互換性問題を考慮してファイル保存ダイアログを開く
+   * @param {object} options
+   * @returns {Promise<FileSystemFileHandle>}
+   */
+  async _showSaveFilePickerWithFallback(options) {
+    try {
+      return await window.showSaveFilePicker(options);
+    } catch (e) {
+      // 一部Edge環境では startIn が TypeError になるため再試行
+      if (e?.name === 'TypeError' && options?.startIn) {
+        const fallbackOptions = { ...options };
+        delete fallbackOptions.startIn;
+        return window.showSaveFilePicker(fallbackOptions);
+      }
+      throw e;
+    }
+  },
 
   /**
    * 必要な権限を要求 / 確認する

@@ -29,6 +29,7 @@ module.exports = {
     Goals: 'readonly',
     ExtendedAchievements: 'readonly',
     Social: 'readonly',
+    RouteManager: 'readonly',
     // 外部ライブラリ
     Chart: 'readonly',
     // v2.0.3

@@ -219,7 +219,7 @@ const Calendar = {
     const formatted = `${date.getMonth() + 1}月${date.getDate()}日`;
     const totalDistance = dayRecords.reduce((sum, r) => sum + r.distance, 0);
     
-    let details = dayRecords.map(r => 
+    const details = dayRecords.map(r => 
       `${r.type === 'run' ? '🏃' : '🚶'} ${r.distance.toFixed(1)}km${r.memo ? ` - ${r.memo}` : ''}`
     ).join('\n');
     
@@ -256,7 +256,7 @@ const Calendar = {
     let html = '<div class="heatmap-container"><div class="heatmap-grid">';
     
     // 週ごとにグループ化
-    let currentDate = new Date(oneYearAgo);
+    const currentDate = new Date(oneYearAgo);
     currentDate.setDate(currentDate.getDate() - currentDate.getDay()); // 週の始まりに調整
     
     while (currentDate <= today) {

@@ -32,8 +32,6 @@ module.exports = {
     RouteManager: 'readonly',
     // 外部ライブラリ
     Chart: 'readonly',
-    // v2.0.3
-    CloudBackup: 'readonly',
   },
   rules: {
     // エラー

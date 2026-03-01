@@ -60,11 +60,11 @@ const App = {
       // Service Worker登録
       this.registerServiceWorker();
 
-      // クラウドバックアップ初期化
-      await this.initCloudBackup();
+      // ページを閉じるときの自動エクスポートを登録
+      this.registerAutoExport();
 
       // 初回訪問メッセージ
-      if (this.data.records.length === 0 && !this._backupRestored) {
+      if (this.data.records.length === 0) {
         this.showWelcomeMessage();
       }
       
@@ -249,33 +249,6 @@ const App = {
       });
     }
 
-    // ── バックアップ関連 ──
-    const backupSelectBtn = document.getElementById('backup-select-btn');
-    if (backupSelectBtn) {
-      backupSelectBtn.addEventListener('click', () => this.selectBackupFile());
-    }
-    const backupNowBtn = document.getElementById('backup-now-btn');
-    if (backupNowBtn) {
-      backupNowBtn.addEventListener('click', () => this.manualBackup());
-    }
-    const backupRestoreBtn = document.getElementById('backup-restore-btn');
-    if (backupRestoreBtn) {
-      backupRestoreBtn.addEventListener('click', () => this.restoreFromBackup());
-    }
-    const backupClearBtn = document.getElementById('backup-clear-btn');
-    if (backupClearBtn) {
-      backupClearBtn.addEventListener('click', () => this.clearBackupPath());
-    }
-    // バックアップ設定モーダルのボタン
-    const backupSetupSelectBtn = document.getElementById('backup-setup-select-btn');
-    if (backupSetupSelectBtn) {
-      backupSetupSelectBtn.addEventListener('click', () => this.selectBackupFile(true));
-    }
-    const backupSetupSkipBtn = document.getElementById('backup-setup-skip-btn');
-    if (backupSetupSkipBtn) {
-      backupSetupSkipBtn.addEventListener('click', () => this.closeBackupSetupModal());
-    }
-
     // 初期UI状態更新
     this.updateThemeButtons();
     this.updateLanguageButtons();
@@ -383,9 +356,6 @@ const App = {
 
     // 成功メッセージ
     this.showToast(`${distance}km を記録しました！ ${type === 'run' ? '🏃' : '🚶'}`, 'success');
-
-    // 自動バックアップ
-    this.autoBackup();
   },
   
   /**
@@ -642,9 +612,6 @@ const App = {
     this.data = Storage.deleteRecord(recordId);
     this.updateUI();
     this.showToast('記録を削除しました', 'info');
-
-    // 自動バックアップ
-    this.autoBackup();
   },
   
   /**
@@ -723,8 +690,6 @@ const App = {
           this.data = Storage.load();
           this.updateUI();
           this.showToast('データをインポートしました', 'success');
-          // 自動バックアップ
-          this.autoBackup();
         } else {
           this.showToast('インポートに失敗しました', 'error');
         }
@@ -956,234 +921,31 @@ const App = {
   },
 
   // ══════════════════════════════════════════════════════
-  // クラウドバックアップ関連
+  // ページ離脱時の自動エクスポート
   // ══════════════════════════════════════════════════════
 
   /**
-   * CloudBackup モジュールを初期化しバックアップ確認を行う
+   * ページを閉じる / 離脱するときに自動でデータをダウンロードする
    */
-  async initCloudBackup() {
-    if (typeof CloudBackup === 'undefined') return;
+  registerAutoExport() {
+    window.addEventListener('beforeunload', () => {
+      if (!this.data || this.data.records.length === 0) return;
 
-    const status = await CloudBackup.init();
-    this.modules.cloudBackup = CloudBackup;
-    this.updateBackupStatus();
+      try {
+        const json = Storage.exportData();
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
 
-    if (!status.isSupported) {
-      // File System Access API 非対応ブラウザ（Firefox / Safari 等）
-      const card = document.getElementById('backup-settings-card');
-      if (card) {
-        const reason = status.reason || this.modules.cloudBackup.getUnsupportedReason?.();
-        let detail =
-          '⚠️ この環境ではバックアップ保存先機能を利用できません。<br>手動エクスポート/インポートでデータを保護できます。';
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `japan-journey-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
 
-        if (reason === 'insecure-context') {
-          detail =
-            '⚠️ 安全な接続で開かれていないため利用できません。<br>' +
-            'Edgeでも <code>https://</code> または <code>http://localhost</code> で開く必要があります。';
-        } else if (reason === 'not-top-level') {
-          detail =
-            '⚠️ 埋め込み表示（iframe）では利用できません。<br>' +
-            'このページを新しいタブで直接開いてください。';
-        } else if (reason === 'api-unavailable') {
-          detail =
-            '⚠️ このブラウザで File System Access API が無効です。<br>' +
-            'Edge/Chrome 最新版で再度お試しください。';
-        }
-
-        card.querySelector('.settings-section').innerHTML =
-          `<p style="color:var(--text-secondary);font-size:0.9em;">${detail}</p>`;
+        URL.revokeObjectURL(url);
+      } catch (_err) {
+        // エラー時は何もしない
       }
-      return;
-    }
-
-    if (!status.hasHandle) {
-      // 未設定 → セットアップモーダルを表示
-      this.showBackupSetupModal();
-    } else {
-      // 既存ハンドルあり → キャッシュとの整合チェック
-      await this.checkBackupRestore();
-    }
-  },
-
-  /**
-   * バックアップ設定モーダルを表示
-   */
-  showBackupSetupModal() {
-    const modal = document.getElementById('backup-setup-modal');
-    if (modal) modal.classList.add('show');
-  },
-
-  /**
-   * バックアップ設定モーダルを閉じる
-   */
-  closeBackupSetupModal() {
-    const modal = document.getElementById('backup-setup-modal');
-    if (modal) modal.classList.remove('show');
-  },
-
-  /**
-   * バックアップファイルを選択する
-   * @param {boolean} fromSetupModal - 設定モーダルから呼ばれた場合は閉じる
-   */
-  async selectBackupFile(fromSetupModal = false) {
-    if (!this.modules.cloudBackup) return;
-
-    const selected = await this.modules.cloudBackup.selectBackupFile();
-    if (selected) {
-      this.updateBackupStatus();
-      // 現在のデータをすぐにバックアップ
-      await this.modules.cloudBackup.saveBackup(Storage.load());
-      this.showToast('バックアップ保存先を設定しました ✅', 'success');
-      if (fromSetupModal) this.closeBackupSetupModal();
-      return;
-    }
-
-    const error = this.modules.cloudBackup.lastError;
-    if (error && error.name !== 'AbortError') {
-      this.showToast('保存先の選択に失敗しました。Edgeを最新版に更新し、https/localhost で開いてください。', 'error');
-    } else if (!fromSetupModal) {
-      this.showToast('保存先の選択がキャンセルされました', 'info');
-    }
-  },
-
-  /**
-   * バックアップからデータを復元するか確認し実行
-   */
-  async checkBackupRestore() {
-    const backup = await this.modules.cloudBackup.loadBackup();
-    if (!backup || !Array.isArray(backup.records)) return;
-
-    const localData = Storage.load();
-    const backupDate = new Date(backup.updatedAt || 0);
-    const localDate  = new Date(localData.updatedAt || 0);
-
-    const localEmpty = localData.records.length === 0;
-    const backupNewer = backupDate > localDate && backup.records.length > 0;
-
-    if (localEmpty && backup.records.length > 0) {
-      // キャッシュが空で、バックアップにデータあり → 自動復元を提案
-      if (confirm(
-        `⚠️ キャッシュにデータがありません。\n` +
-        `バックアップファイルに ${backup.records.length} 件の記録があります。\n\n` +
-        `バックアップから復元しますか？`
-      )) {
-        Storage.importData(JSON.stringify(backup));
-        this.data = Storage.load();
-        this.updateUI();
-        this._backupRestored = true;
-        this.showToast('バックアップから復元しました！', 'success');
-      }
-    } else if (backupNewer) {
-      // バックアップの方が新しい → 復元を提案
-      if (confirm(
-        `ℹ️ バックアップが現在のキャッシュより新しいデータを持っています。\n` +
-        `（バックアップ: ${backupDate.toLocaleString()}）\n\n` +
-        `バックアップから復元しますか？`
-      )) {
-        Storage.importData(JSON.stringify(backup));
-        this.data = Storage.load();
-        this.updateUI();
-        this._backupRestored = true;
-        this.showToast('バックアップから復元しました！', 'success');
-      }
-    }
-  },
-
-  /**
-   * 手動バックアップ
-   */
-  async manualBackup() {
-    if (!this.modules.cloudBackup?.fileHandle) return;
-    const ok = await this.modules.cloudBackup.saveBackup(Storage.load());
-    if (ok) {
-      this.showToast('バックアップを保存しました ✅', 'success');
-    } else {
-      this.showToast('バックアップ保存に失敗しました', 'error');
-    }
-  },
-
-  /**
-   * バックアップから手動復元
-   */
-  async restoreFromBackup() {
-    if (!this.modules.cloudBackup?.fileHandle) return;
-    if (!confirm('バックアップファイルの内容で現在のデータを上書きしますか？')) return;
-
-    const backup = await this.modules.cloudBackup.loadBackup();
-    if (!backup) {
-      this.showToast('バックアップの読み込みに失敗しました', 'error');
-      return;
-    }
-    Storage.importData(JSON.stringify(backup));
-    this.data = Storage.load();
-    this.updateUI();
-    this.showToast('バックアップから復元しました！', 'success');
-  },
-
-  /**
-   * バックアップ設定をクリア
-   */
-  async clearBackupPath() {
-    if (!confirm('バックアップ保存先の設定を削除しますか？\nデータは削除されません。')) return;
-    await this.modules.cloudBackup?.clearBackupPath();
-    this.updateBackupStatus();
-    this.showToast('バックアップ設定をクリアしました', 'info');
-  },
-
-  /**
-   * 自動バックアップ（サイレント）
-   */
-  async autoBackup() {
-    if (!this.modules.cloudBackup?.fileHandle) return;
-    await this.modules.cloudBackup.saveBackup(Storage.load());
-    // 最終バックアップ時刻を更新
-    this.updateBackupLastTime();
-  },
-
-  /**
-   * 設定タブのバックアップ状態表示を更新
-   */
-  updateBackupStatus() {
-    const backup = this.modules.cloudBackup;
-    if (!backup) return;
-
-    const icon    = document.getElementById('backup-status-icon');
-    const text    = document.getElementById('backup-status-text');
-    const hint    = document.getElementById('backup-path-hint');
-    const nameEl  = document.getElementById('backup-file-name');
-    const nowBtn  = document.getElementById('backup-now-btn');
-    const restBtn = document.getElementById('backup-restore-btn');
-    const clearBtn = document.getElementById('backup-clear-btn');
-
-    if (backup.fileHandle) {
-      if (icon)    icon.textContent  = '🟢';
-      if (text)    text.textContent  = '設定済み';
-      if (nameEl)  nameEl.textContent = `📄 ${backup.getFileName()}`;
-      if (hint)    hint.style.display = '';
-      if (nowBtn)  nowBtn.disabled  = false;
-      if (restBtn) restBtn.disabled = false;
-      if (clearBtn) clearBtn.style.display = '';
-    } else {
-      if (icon)    icon.textContent  = '⚪';
-      if (text)    text.textContent  = '未設定';
-      if (hint)    hint.style.display = 'none';
-      if (nowBtn)  nowBtn.disabled  = true;
-      if (restBtn) restBtn.disabled = true;
-      if (clearBtn) clearBtn.style.display = 'none';
-    }
-  },
-
-  /**
-   * 最終バックアップ時刻表示を更新
-   */
-  updateBackupLastTime() {
-    const nameEl = document.getElementById('backup-file-name');
-    if (nameEl && this.modules.cloudBackup?.fileHandle) {
-      const now = new Date().toLocaleTimeString('ja-JP');
-      nameEl.textContent =
-        `📄 ${this.modules.cloudBackup.getFileName()}  （最終: ${now}）`;
-    }
+    });
   }
 };
 

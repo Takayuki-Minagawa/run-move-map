@@ -1167,81 +1167,8 @@ body.dark-mode .ranking-item.is-me {
 }
 
 /* ===========================================
-   クラウドバックアップ UI
+   モーダルボタン secondary
    =========================================== */
-
-/* ── 設定タブ内の状態表示 ── */
-.backup-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--border-color, #eee);
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.backup-status-icon {
-  font-size: 1.1em;
-  line-height: 1;
-}
-
-.backup-path-hint {
-  color: var(--text-secondary, #888);
-  font-size: 0.82em;
-  margin-bottom: 10px;
-  padding: 4px 8px;
-  background: rgba(0,0,0,0.04);
-  border-radius: 6px;
-  word-break: break-all;
-}
-
-.backup-note {
-  font-size: 0.8em;
-  color: var(--text-secondary, #888);
-  margin-top: 10px;
-  line-height: 1.5;
-}
-
-/* ── 設定モーダル ── */
-#backup-setup-modal .modal-content {
-  max-width: 420px;
-  text-align: center;
-  padding: 32px 28px;
-}
-
-.backup-setup-description {
-  margin: 12px 0 20px;
-  font-size: 0.95em;
-  color: var(--text-color, #333);
-  line-height: 1.7;
-}
-
-.backup-setup-hint {
-  display: inline-block;
-  background: rgba(99, 202, 183, 0.12);
-  border-left: 3px solid #4caf86;
-  padding: 8px 12px;
-  border-radius: 6px;
-  margin-top: 8px;
-  text-align: left;
-  font-size: 0.9em;
-}
-
-.backup-setup-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.backup-setup-note {
-  font-size: 0.78em;
-  color: var(--text-secondary, #aaa);
-  margin-top: 14px;
-}
 
 .modal-btn.secondary {
   background: transparent;
@@ -1251,18 +1178,4 @@ body.dark-mode .ranking-item.is-me {
 
 .modal-btn.secondary:hover {
   background: rgba(255, 107, 107, 0.08);
-}
-
-/* ダークモード対応 */
-body.dark-mode .backup-status {
-  background: #1f2a48;
-  border-color: #2d3a5a;
-}
-
-body.dark-mode .backup-path-hint {
-  background: rgba(255,255,255,0.04);
-}
-
-body.dark-mode .backup-setup-hint {
-  background: rgba(76, 175, 134, 0.15);
 }

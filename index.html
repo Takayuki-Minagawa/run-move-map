@@ -264,32 +264,6 @@
 
       <!-- 設定タブ -->
       <div class="tab-content" id="settings-tab">
-        <!-- バックアップ設定 -->
-        <div class="card" id="backup-settings-card">
-          <div class="card-header">☁️ バックアップ保存先</div>
-          <div class="settings-section">
-            <div class="backup-status" id="backup-status-display">
-              <span class="backup-status-icon" id="backup-status-icon">⚪</span>
-              <span id="backup-status-text">未設定</span>
-            </div>
-            <div class="backup-path-hint" id="backup-path-hint" style="display:none;">
-              <small id="backup-file-name"></small>
-            </div>
-            <button class="settings-btn" id="backup-select-btn">
-              📁 保存先を選択 / 変更
-            </button>
-            <button class="settings-btn" id="backup-now-btn" disabled>
-              ☁️ 今すぐバックアップ
-            </button>
-            <button class="settings-btn" id="backup-restore-btn" disabled>
-              🔄 バックアップから復元
-            </button>
-            <button class="settings-btn danger" id="backup-clear-btn" style="display:none;">
-              🗑️ 保存先設定をクリア
-            </button>
-            <p class="backup-note">💡 Google Drive や OneDrive の同期フォルダを指定するとキャッシュクリア後も安全です。</p>
-          </div>
-        </div>
         <div class="card">
           <div class="card-header" data-i18n="settings.dataManagement">⚙️ データ管理</div>
           <div class="settings-section">
@@ -406,25 +380,6 @@
     </div>
   </div>
 
-  <!-- バックアップ設定モーダル -->
-  <div class="modal" id="backup-setup-modal">
-    <div class="modal-overlay"></div>
-    <div class="modal-content">
-      <div class="modal-icon">☁️</div>
-      <h2 class="modal-title">バックアップ保存先を設定</h2>
-      <p class="modal-subtitle">データのバックアップ先ファイルを選択してください</p>
-      <div class="backup-setup-description">
-        <p>キャッシュクリアなどによるデータ消失を防ぐため、<br>バックアップファイルの保存先を設定することをおすすめします。</p>
-        <p class="backup-setup-hint">📂 <strong>Google Drive</strong> や <strong>OneDrive</strong> などのクラウドストレージ<br>に同期しているフォルダを指定すると安全です。</p>
-      </div>
-      <div class="backup-setup-buttons">
-        <button class="modal-btn" id="backup-setup-select-btn">📁 保存先ファイルを選択する</button>
-        <button class="modal-btn secondary" id="backup-setup-skip-btn">後で設定する</button>
-      </div>
-      <p class="backup-setup-note">※ この設定は後から「設定」タブで変更できます</p>
-    </div>
-  </div>
-
   <!-- トースト通知コンテナ -->
   <div id="toast-container"></div>
 
@@ -434,7 +389,6 @@
   <!-- Scripts -->
   <script src="js/routes.js"></script>
   <script src="js/storage.js"></script>
-  <script src="js/cloud-backup.js"></script>
   <script src="js/achievements.js"></script>
   <script src="js/extended-achievements.js"></script>
   <script src="js/map.js"></script>

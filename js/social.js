@@ -6,6 +6,14 @@
 
 const Social = {
   /**
+   * ソーシャル機能初期化
+   * @param {string} containerId
+   */
+  init(containerId = 'social-container') {
+    this.renderAll(containerId);
+  },
+
+  /**
    * クラウド同期UI
    */
   renderCloudSync(containerId) {

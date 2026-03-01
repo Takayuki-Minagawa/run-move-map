@@ -21,6 +21,7 @@ const ASSETS_TO_CACHE = [
   './js/extended-achievements.js',
   './js/multi-routes.js',
   './js/social.js',
+  './js/cloud-backup.js',
   './manifest.json'
 ];
 

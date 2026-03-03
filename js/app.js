@@ -133,8 +133,8 @@ const App = {
   initForm() {
     const dateInput = document.getElementById('record-date');
     if (dateInput) {
-      // 今日の日付をデフォルトに
-      dateInput.value = new Date().toISOString().split('T')[0];
+      // 今日の日付をデフォルトに（日本時間基準）
+      dateInput.value = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date());
     }
   },
   
@@ -665,7 +665,7 @@ const App = {
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `japan-journey-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `japan-journey-backup-${new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date())}.json`;
     a.click();
     
     URL.revokeObjectURL(url);
@@ -938,7 +938,7 @@ const App = {
 
         const a = document.createElement('a');
         a.href = url;
-        a.download = `japan-journey-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `japan-journey-backup-${new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date())}.json`;
         a.click();
 
         URL.revokeObjectURL(url);

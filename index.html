@@ -116,7 +116,15 @@
           </div>
           <div class="form-group">
             <label for="record-distance" data-i18n="form.distance">距離 (km)</label>
-            <input type="number" id="record-distance" step="0.01" min="0.01" placeholder="5.00" required autocomplete="off">
+            <input type="text" id="record-distance" inputmode="decimal" placeholder="5.00 / 2+1.5" required autocomplete="off">
+            <div class="input-hint" id="distance-hint">
+              <span class="hint-label" data-i18n="form.distanceHint">例:</span>
+              <button type="button" class="hint-example" data-distance-fill="3.5">3.5</button>
+              <button type="button" class="hint-example" data-distance-fill="2+1.5">2+1.5</button>
+              <button type="button" class="hint-example" data-distance-fill="5-0.3">5-0.3</button>
+              <button type="button" class="hint-example" data-distance-fill="1.2*2">1.2×2</button>
+              <span class="distance-preview" id="distance-preview"></span>
+            </div>
           </div>
         </div>
         <div class="form-row">

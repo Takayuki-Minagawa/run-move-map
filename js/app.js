@@ -136,6 +136,71 @@ const App = {
       // 今日の日付をデフォルトに（日本時間基準）
       dateInput.value = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date());
     }
+
+    // 距離入力欄: 計算式プレビュー & 例ボタン
+    const distInput = document.getElementById('record-distance');
+    const preview = document.getElementById('distance-preview');
+    if (distInput && preview) {
+      const renderPreview = () => {
+        const raw = distInput.value.trim();
+        if (!raw) {
+          preview.textContent = '';
+          preview.classList.remove('valid', 'invalid');
+          return;
+        }
+        const hasOperator = /[+\-*/]/.test(raw);
+        const value = this.parseDistanceExpression(raw);
+        const valid = isFinite(value) && value > 0;
+        if (valid && hasOperator) {
+          preview.textContent = `= ${this.formatDistanceValue(value)} km`;
+          preview.classList.add('valid');
+          preview.classList.remove('invalid');
+        } else if (!valid) {
+          preview.textContent = '式を確認してください';
+          preview.classList.add('invalid');
+          preview.classList.remove('valid');
+        } else {
+          // 数値のみの有効入力はプレビューを出さない
+          preview.textContent = '';
+          preview.classList.remove('valid', 'invalid');
+        }
+      };
+      distInput.addEventListener('input', renderPreview);
+    }
+
+    document.querySelectorAll('[data-distance-fill]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById('record-distance');
+        if (!input) return;
+        input.value = btn.dataset.distanceFill;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.focus();
+      });
+    });
+  },
+
+  /**
+   * 距離入力の式を評価する（数字・+ - * / ( ) のみ許可）
+   */
+  parseDistanceExpression(input) {
+    if (typeof input !== 'string') return NaN;
+    const expr = input.trim();
+    if (!expr) return NaN;
+    if (!/^[\d+\-*/().\s]+$/.test(expr)) return NaN;
+    try {
+      const result = Function('"use strict"; return (' + expr + ');')();
+      if (typeof result !== 'number' || !isFinite(result)) return NaN;
+      return result;
+    } catch (e) {
+      return NaN;
+    }
+  },
+
+  /**
+   * 距離値を最大2桁で整形（無駄なゼロは取り除く）
+   */
+  formatDistanceValue(value) {
+    return Math.round(value * 100) / 100 + '';
   },
   
   /**
@@ -291,13 +356,15 @@ const App = {
     
     const form = e.target;
     const date = form.querySelector('#record-date').value;
-    const distance = parseFloat(form.querySelector('#record-distance').value);
+    const distanceRaw = form.querySelector('#record-distance').value;
+    const distanceValue = this.parseDistanceExpression(distanceRaw);
+    const distance = isFinite(distanceValue) ? Math.round(distanceValue * 100) / 100 : NaN;
     const type = form.querySelector('input[name="type"]:checked').value;
     const memo = form.querySelector('#record-memo')?.value || '';
     const photo = this.currentPhoto || null;
-    
+
     if (!date || isNaN(distance) || distance <= 0) {
-      this.showToast('日付と距離を正しく入力してください', 'error');
+      this.showToast('日付と距離を正しく入力してください（例: 3.5、2+1.5）', 'error');
       return;
     }
     
@@ -350,6 +417,11 @@ const App = {
 
     // フォームリセット
     form.querySelector('#record-distance').value = '';
+    const previewEl = document.getElementById('distance-preview');
+    if (previewEl) {
+      previewEl.textContent = '';
+      previewEl.classList.remove('valid', 'invalid');
+    }
     const memoInput = form.querySelector('#record-memo');
     if (memoInput) memoInput.value = '';
     this.clearPhotoPreview();

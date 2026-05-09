@@ -314,7 +314,8 @@ body {
 }
 
 .form-group input[type="date"],
-.form-group input[type="number"] {
+.form-group input[type="number"],
+.form-group input[type="text"] {
   width: 100%;
   padding: 12px 15px;
   border: 2px solid var(--border-color);
@@ -326,6 +327,52 @@ body {
 .form-group input:focus {
   outline: none;
   border-color: var(--primary-color);
+}
+
+/* 距離入力のヒント・例ボタン・プレビュー */
+.input-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.input-hint .hint-label {
+  margin-right: 2px;
+}
+
+.input-hint .hint-example {
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color);
+  color: var(--text-color, inherit);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.input-hint .hint-example:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.input-hint .distance-preview {
+  margin-left: auto;
+  font-weight: 600;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+.input-hint .distance-preview.valid {
+  color: var(--primary-color);
+}
+
+.input-hint .distance-preview.invalid {
+  color: #e74c3c;
 }
 
 /* Type Toggle */

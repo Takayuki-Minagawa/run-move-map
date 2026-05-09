@@ -142,21 +142,27 @@ const App = {
     const preview = document.getElementById('distance-preview');
     if (distInput && preview) {
       const renderPreview = () => {
-        const raw = distInput.value;
-        if (!raw || !/[+\-*/]/.test(raw)) {
+        const raw = distInput.value.trim();
+        if (!raw) {
           preview.textContent = '';
           preview.classList.remove('valid', 'invalid');
           return;
         }
+        const hasOperator = /[+\-*/]/.test(raw);
         const value = this.parseDistanceExpression(raw);
-        if (isFinite(value) && value > 0) {
+        const valid = isFinite(value) && value > 0;
+        if (valid && hasOperator) {
           preview.textContent = `= ${this.formatDistanceValue(value)} km`;
           preview.classList.add('valid');
           preview.classList.remove('invalid');
-        } else {
+        } else if (!valid) {
           preview.textContent = '式を確認してください';
           preview.classList.add('invalid');
           preview.classList.remove('valid');
+        } else {
+          // 数値のみの有効入力はプレビューを出さない
+          preview.textContent = '';
+          preview.classList.remove('valid', 'invalid');
         }
       };
       distInput.addEventListener('input', renderPreview);

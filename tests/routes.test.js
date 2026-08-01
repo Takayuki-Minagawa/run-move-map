@@ -3,6 +3,8 @@
  * ルートデータと位置計算機能のテスト
  */
 
+const { ROUTE_DATA: ACTUAL_ROUTE_DATA } = require('../js/routes');
+
 describe('ROUTE_DATA', () => {
   // ルートデータを直接定義してテスト
   const ROUTE_DATA = {
@@ -115,6 +117,15 @@ describe('ROUTE_DATA', () => {
       expect(city).toHaveProperty('coordinates');
       expect(city).toHaveProperty('trivia');
       expect(city).toHaveProperty('landmark');
+    });
+  });
+
+  test('実データの全都市に日本国内の緯度経度がある', () => {
+    ACTUAL_ROUTE_DATA.cities.forEach(city => {
+      expect(city.geo.lat).toBeGreaterThanOrEqual(20);
+      expect(city.geo.lat).toBeLessThanOrEqual(46);
+      expect(city.geo.lng).toBeGreaterThanOrEqual(122);
+      expect(city.geo.lng).toBeLessThanOrEqual(154);
     });
   });
 

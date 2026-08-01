@@ -15,6 +15,7 @@ const ROUTE_DATA = {
       prefecture: "沖縄県",
       cumulative: 0,
       coordinates: { x: 25, y: 92 },
+      geo: { lat: 26.2124, lng: 127.6809 },
       trivia: "🌺 沖縄そばと美ら海水族館が有名！年間平均気温は23℃の常夏の島です。",
       landmark: "首里城"
     },
@@ -24,6 +25,7 @@ const ROUTE_DATA = {
       prefecture: "鹿児島県",
       cumulative: 650,
       coordinates: { x: 35, y: 78 },
+      geo: { lat: 31.5966, lng: 130.5571 },
       trivia: "🌋 桜島が見える絶景の街。黒豚やさつま揚げが美味しい！",
       landmark: "桜島"
     },
@@ -33,6 +35,7 @@ const ROUTE_DATA = {
       prefecture: "熊本県",
       cumulative: 800,
       coordinates: { x: 37, y: 72 },
+      geo: { lat: 32.8031, lng: 130.7079 },
       trivia: "🐻 くまモンの故郷！熊本城と馬刺しが名物です。",
       landmark: "熊本城"
     },
@@ -42,6 +45,7 @@ const ROUTE_DATA = {
       prefecture: "福岡県",
       cumulative: 920,
       coordinates: { x: 38, y: 68 },
+      geo: { lat: 33.5904, lng: 130.4017 },
       trivia: "🍜 とんこつラーメン発祥の地。屋台文化も有名です！",
       landmark: "太宰府天満宮"
     },
@@ -51,6 +55,7 @@ const ROUTE_DATA = {
       prefecture: "広島県",
       cumulative: 1100,
       coordinates: { x: 48, y: 65 },
+      geo: { lat: 34.3853, lng: 132.4553 },
       trivia: "⛩️ 厳島神社と広島風お好み焼きが有名。平和記念公園も必見！",
       landmark: "厳島神社"
     },
@@ -60,6 +65,7 @@ const ROUTE_DATA = {
       prefecture: "岡山県",
       cumulative: 1200,
       coordinates: { x: 54, y: 63 },
+      geo: { lat: 34.6551, lng: 133.9195 },
       trivia: "🍑 桃太郎伝説の地。白桃とマスカットの産地です！",
       landmark: "倉敷美観地区"
     },
@@ -69,6 +75,7 @@ const ROUTE_DATA = {
       prefecture: "大阪府",
       cumulative: 1350,
       coordinates: { x: 60, y: 60 },
+      geo: { lat: 34.6937, lng: 135.5023 },
       trivia: "🐙 たこ焼き、お好み焼き、串カツ！食い倒れの街！",
       landmark: "大阪城"
     },
@@ -78,6 +85,7 @@ const ROUTE_DATA = {
       prefecture: "京都府",
       cumulative: 1400,
       coordinates: { x: 62, y: 57 },
+      geo: { lat: 35.0116, lng: 135.7681 },
       trivia: "⛩️ 千年の都。金閣寺、清水寺など歴史的建造物の宝庫！",
       landmark: "金閣寺"
     },
@@ -87,6 +95,7 @@ const ROUTE_DATA = {
       prefecture: "愛知県",
       cumulative: 1550,
       coordinates: { x: 66, y: 55 },
+      geo: { lat: 35.1815, lng: 136.9066 },
       trivia: "🍤 ひつまぶし、味噌カツ、手羽先！独自の食文化が魅力。",
       landmark: "名古屋城"
     },
@@ -96,6 +105,7 @@ const ROUTE_DATA = {
       prefecture: "静岡県",
       cumulative: 1700,
       coordinates: { x: 72, y: 52 },
+      geo: { lat: 34.9756, lng: 138.3828 },
       trivia: "🗻 富士山のお膝元！お茶とうなぎパイが有名です。",
       landmark: "富士山"
     },
@@ -105,6 +115,7 @@ const ROUTE_DATA = {
       prefecture: "東京都",
       cumulative: 1880,
       coordinates: { x: 78, y: 48 },
+      geo: { lat: 35.6762, lng: 139.6503 },
       trivia: "🗼 日本の首都！渋谷、浅草、秋葉原など見どころ満載！",
       landmark: "東京タワー"
     },
@@ -114,6 +125,7 @@ const ROUTE_DATA = {
       prefecture: "宮城県",
       cumulative: 2230,
       coordinates: { x: 82, y: 35 },
+      geo: { lat: 38.2682, lng: 140.8694 },
       trivia: "🌿 杜の都。牛タンとずんだ餅が名物です！",
       landmark: "瑞鳳殿"
     },
@@ -123,6 +135,7 @@ const ROUTE_DATA = {
       prefecture: "青森県",
       cumulative: 2530,
       coordinates: { x: 82, y: 25 },
+      geo: { lat: 40.8222, lng: 140.7474 },
       trivia: "🍎 りんごの生産量日本一！ねぶた祭りも有名です。",
       landmark: "弘前城"
     },
@@ -132,6 +145,7 @@ const ROUTE_DATA = {
       prefecture: "北海道",
       cumulative: 3000,
       coordinates: { x: 85, y: 12 },
+      geo: { lat: 43.0618, lng: 141.3545 },
       trivia: "🍺 ビールと味噌ラーメン、ジンギスカン！雪まつりも最高！",
       landmark: "時計台"
     }

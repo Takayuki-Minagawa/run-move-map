@@ -8,6 +8,7 @@
   <title>日本縦断チャレンジ</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/extended.css">
+  <link rel="stylesheet" href="css/fun.css">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗾</text></svg>">
   <link rel="apple-touch-icon" href="assets/icon-192.svg">
@@ -40,6 +41,8 @@
     <!-- 地図セクション -->
     <section class="card map-section">
       <div id="map-container"></div>
+      <div id="season-fx" class="season-fx" aria-hidden="true"></div>
+      <span id="season-fx-badge" class="season-fx-badge">季節演出: <span id="season-fx-label">—</span></span>
     </section>
 
     <!-- 進捗セクション -->
@@ -61,6 +64,7 @@
           <div class="progress-text">
             <span data-i18n="progress.total">全体進捗</span>: <span id="progress-percent">0</span>% / <span id="total-route-distance">3,000</span>km
           </div>
+          <div class="current-location-links" id="current-location-links" aria-label="現在地を外部地図で見る"></div>
         </div>
       </div>
 
@@ -108,6 +112,8 @@
     <!-- 記録フォーム -->
     <section class="card">
       <div class="card-header">📝 <span data-i18n="form.title">距離を記録</span></div>
+      <div id="daily-mission" class="daily-mission" aria-live="polite"></div>
+      <div id="anniversary-memory" class="anniversary-memory"></div>
       <form id="record-form" class="form-section">
         <div class="form-row">
           <div class="form-group">
@@ -201,6 +207,22 @@
 
       <!-- 統計タブ（新機能） -->
       <div class="tab-content" id="stats-tab">
+        <div class="card fun-card fun-conversions-card">
+          <div class="card-header">✨ 距離のおもしろ換算</div>
+          <div id="fun-conversions" class="fun-metrics-grid"></div>
+        </div>
+        <div class="card fun-card">
+          <div class="card-header">🔭 ゴール到着予測</div>
+          <div id="arrival-forecast"></div>
+        </div>
+        <div class="card fun-card wrapped-launcher">
+          <div class="card-header">🎁 年間振り返り</div>
+          <div class="wrapped-controls">
+            <select id="wrapped-year" aria-label="振り返る年"></select>
+            <button type="button" class="fun-primary-btn" id="wrapped-open-btn">一年を振り返る</button>
+          </div>
+          <p id="wrapped-summary" class="fun-supporting-text"></p>
+        </div>
         <div class="card">
           <div class="card-header" data-i18n="charts.weekly">📊 週間距離</div>
           <div class="chart-container">
@@ -243,10 +265,23 @@
           <div class="badge-stats" id="badge-stats"></div>
           <div class="badges-categories" id="badges-list"></div>
         </div>
+        <div class="card fun-card">
+          <div class="card-header">⛩️ 旅の御朱印帳</div>
+          <p class="fun-supporting-text">到着した都市には、旅の朱印が押されます。</p>
+          <div id="stamp-book" class="stamp-book"></div>
+        </div>
+        <div class="card fun-card">
+          <div class="card-header">💌 絵はがきコレクション</div>
+          <div id="postcard-gallery" class="postcard-gallery"></div>
+        </div>
       </div>
 
       <!-- 目標・チャレンジタブ（新機能） -->
       <div class="tab-content" id="goals-tab">
+        <div class="card fun-card">
+          <div class="card-header">🧠 ご当地クイズ</div>
+          <div id="quiz-container" class="quiz-container"></div>
+        </div>
         <div class="card">
           <div class="card-header" data-i18n="goals.title">🎯 目標設定</div>
           <div id="goals-settings"></div>
@@ -259,6 +294,24 @@
 
       <!-- ルート選択タブ（新機能） -->
       <div class="tab-content" id="routes-tab">
+        <div class="card fun-card" id="replay-player">
+          <div class="card-header">🎬 旅のリプレイ</div>
+          <p id="replay-summary" class="fun-supporting-text"></p>
+          <div class="replay-track"><span id="replay-progress"></span></div>
+          <p id="replay-label" class="replay-label" aria-live="polite">準備完了</p>
+          <button type="button" class="fun-primary-btn" id="replay-btn">▶ 旅を振り返る</button>
+        </div>
+        <div class="card fun-card">
+          <div class="card-header">👻 ゴーストペーサー</div>
+          <p id="ghost-lead" class="ghost-lead"></p>
+          <div class="ghost-settings">
+            <label class="fun-toggle"><input type="checkbox" id="ghost-enabled"><span>ゴーストを表示</span></label>
+            <label>開始日 <input type="date" id="ghost-start-date"></label>
+            <label>1日のペース <input type="number" id="ghost-daily-pace" min="0.1" step="0.1"> km</label>
+            <button type="button" class="fun-secondary-btn" id="save-ghost-btn">設定を保存</button>
+          </div>
+          <small id="ghost-status" class="fun-status" aria-live="polite"></small>
+        </div>
         <div class="card">
           <div class="card-header" data-i18n="route.title">🗺️ コース選択</div>
           <div id="route-selector"></div>
@@ -268,6 +321,15 @@
       <!-- ソーシャルタブ（新機能） -->
       <div class="tab-content" id="social-tab">
         <div id="social-container"></div>
+        <div class="card fun-card">
+          <div class="card-header">🖼️ 進捗シェアカード</div>
+          <div class="share-card-preview"><canvas id="share-card-canvas" aria-label="現在の旅の進捗カード"></canvas></div>
+          <div class="share-actions">
+            <button type="button" class="fun-secondary-btn" id="share-download-btn">PNGを保存</button>
+            <button type="button" class="fun-primary-btn" id="share-native-btn">共有する</button>
+          </div>
+          <small id="share-status" class="fun-status" aria-live="polite"></small>
+        </div>
       </div>
 
       <!-- 設定タブ -->
@@ -299,6 +361,19 @@
           <div class="card-header" data-i18n="settings.language">🌐 言語</div>
           <div class="settings-section" id="language-selector"></div>
         </div>
+        <div class="card fun-card">
+          <div class="card-header">🎉 旅の演出</div>
+          <div class="settings-section fun-settings">
+            <label class="fun-toggle">
+              <input type="checkbox" id="season-fx-toggle">
+              <span><strong>季節テーマ</strong><small>地図に桜・波・紅葉・雪を表示</small></span>
+            </label>
+            <label class="fun-toggle">
+              <input type="checkbox" id="sound-toggle">
+              <span><strong>効果音</strong><small>記録時と都市到達時に短い音を再生</small></span>
+            </label>
+          </div>
+        </div>
         <div class="card">
           <div class="card-header">🎂 誕生日（バッジ用）</div>
           <div class="settings-section">
@@ -312,7 +387,7 @@
     <!-- フッター -->
     <footer class="footer">
       <p data-i18n="footer.tagline">🗾 日本縦断チャレンジ - 毎日の一歩が旅になる</p>
-      <p class="footer-version">v2.0.0</p>
+      <p class="footer-version">v2.1.0</p>
     </footer>
   </div>
 
@@ -388,6 +463,20 @@
     </div>
   </div>
 
+  <!-- 年間振り返りモーダル -->
+  <div class="modal" id="wrapped-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content wrapped-modal-content">
+      <button class="modal-close" aria-label="閉じる">×</button>
+      <div id="wrapped-stage" class="wrapped-stage"></div>
+      <div class="wrapped-navigation">
+        <button type="button" id="wrapped-prev-btn" aria-label="前のカード">←</button>
+        <span id="wrapped-counter">1 / 5</span>
+        <button type="button" id="wrapped-next-btn" aria-label="次のカード">→</button>
+      </div>
+    </div>
+  </div>
+
   <!-- トースト通知コンテナ -->
   <div id="toast-container"></div>
 
@@ -407,6 +496,13 @@
   <script src="js/theme.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/social.js"></script>
+  <script src="js/fun-stats.js"></script>
+  <script src="js/postcards.js"></script>
+  <script src="js/replay.js"></script>
+  <script src="js/share-card.js"></script>
+  <script src="js/season-fx.js"></script>
+  <script src="js/sound-effects.js"></script>
+  <script src="js/fun-extras.js"></script>
   <script src="js/app.js"></script>
   
   <!-- タブ切り替えのフォールバック（確実に動作させる） -->
@@ -443,15 +539,5 @@
     });
   </script>
   
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('✅ Service Worker registered'))
-          .catch(err => console.log('❌ Service Worker registration failed:', err));
-      });
-    }
-  </script>
 </body>
 </html>

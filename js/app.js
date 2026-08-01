@@ -1,5 +1,5 @@
 /**
- * メインアプリケーションロジック v2.0
+ * メインアプリケーションロジック v2.1
  * 拡張機能対応版
  */
 
@@ -56,6 +56,10 @@ const App = {
       // 追加モジュール初期化
       this.initExtendedModules();
       console.log('✅ Extended modules initialized');
+
+      // v2.1 の旅を楽しくする機能（すべて個別に無効化可能）
+      this.initFunFeatures();
+      console.log('✅ Fun features initialized');
       
       // Service Worker登録
       this.registerServiceWorker();
@@ -68,7 +72,7 @@ const App = {
         this.showWelcomeMessage();
       }
       
-      console.log('🗾 日本縦断チャレンジ v2.0 アプリ起動完了！');
+      console.log('🗾 日本縦断チャレンジ v2.1 アプリ起動完了！');
     } catch (error) {
       console.error('❌ App.init() エラー:', error);
     }
@@ -80,23 +84,29 @@ const App = {
   initExtendedModules() {
     // カレンダー初期化
     if (typeof Calendar !== 'undefined') {
-      Calendar.init('calendar-container', this.data.records);
-      this.modules.calendar = Calendar;
+      this.runOptionalModule('Calendar', () => {
+        Calendar.init('calendar-container', this.data.records);
+        this.modules.calendar = Calendar;
+      });
     }
     
     // グラフ初期化
-    if (typeof Charts !== 'undefined') {
-      Charts.init();
-      // 初期グラフを描画
-      const stats = Storage.getStatistics();
-      Charts.updateAllCharts(this.data.records, stats);
-      this.modules.charts = Charts;
+    if (typeof Charts !== 'undefined' && typeof Chart !== 'undefined') {
+      this.runOptionalModule('Charts', () => {
+        Charts.init();
+        // 初期グラフを描画
+        const stats = Storage.getStatistics();
+        Charts.updateAllCharts(this.data.records, stats);
+        this.modules.charts = Charts;
+      });
     }
     
     // 目標初期化
     if (typeof Goals !== 'undefined') {
-      Goals.init('goals-settings', 'challenge-selector', this.data.records);
-      this.modules.goals = Goals;
+      this.runOptionalModule('Goals', () => {
+        Goals.init('goals-settings', 'challenge-selector', this.data.records);
+        this.modules.goals = Goals;
+      });
     }
     
     // 拡張バッジ初期化
@@ -106,8 +116,77 @@ const App = {
     
     // ソーシャル機能UI初期化
     if (typeof Social !== 'undefined') {
-      Social.init();
-      this.modules.social = Social;
+      this.runOptionalModule('Social', () => {
+        Social.init();
+        this.modules.social = Social;
+      });
+    }
+  },
+
+  /**
+   * 任意モジュールの失敗をアプリ本体から分離する
+   */
+  runOptionalModule(name, initializer) {
+    try {
+      initializer();
+      return true;
+    } catch (error) {
+      console.warn(`Optional module ${name} was skipped:`, error);
+      return false;
+    }
+  },
+
+  /**
+   * v2.1 表示・演出モジュール初期化
+   */
+  initFunFeatures() {
+    if (typeof FunStats !== 'undefined') {
+      this.runOptionalModule('FunStats', () => {
+        this.modules.funStats = FunStats;
+        FunStats.render(this.data, ROUTE_DATA);
+      });
+    }
+
+    if (typeof Postcards !== 'undefined') {
+      this.runOptionalModule('Postcards', () => {
+        this.modules.postcards = Postcards;
+        Postcards.render(this.data, ROUTE_DATA);
+      });
+    }
+
+    if (typeof JourneyReplay !== 'undefined') {
+      this.runOptionalModule('JourneyReplay', () => {
+        this.modules.replay = JourneyReplay;
+        JourneyReplay.init(this.data, JapanMap, ROUTE_DATA);
+      });
+    }
+
+    if (typeof ShareCard !== 'undefined') {
+      this.runOptionalModule('ShareCard', () => {
+        this.modules.shareCard = ShareCard;
+        ShareCard.init(this.data, ROUTE_DATA, Achievements.getCurrentLevel(this.data.totalDistance));
+      });
+    }
+
+    if (typeof SeasonFx !== 'undefined') {
+      this.runOptionalModule('SeasonFx', () => {
+        this.modules.seasonFx = SeasonFx;
+        SeasonFx.init(this.data, Storage);
+      });
+    }
+
+    if (typeof SoundEffects !== 'undefined') {
+      this.runOptionalModule('SoundEffects', () => {
+        this.modules.soundEffects = SoundEffects;
+        SoundEffects.init(Storage);
+      });
+    }
+
+    if (typeof FunExtras !== 'undefined') {
+      this.runOptionalModule('FunExtras', () => {
+        this.modules.funExtras = FunExtras;
+        FunExtras.init(this.data, ROUTE_DATA, JapanMap, Storage);
+      });
     }
   },
   
@@ -404,9 +483,17 @@ const App = {
     }
     
     // 完走チェック
-    if (this.data.totalDistance >= 3000 && oldDistance < 3000) {
+    const reachedGoal = this.data.totalDistance >= 3000 && oldDistance < 3000;
+    if (reachedGoal) {
       this.showGoalModal();
       JapanMap.celebrateGoal();
+    }
+
+    // ユーザー操作をきっかけに効果音を再生
+    if (this.modules.soundEffects) {
+      if (reachedGoal) this.modules.soundEffects.playGoal();
+      else if (newCities.length > 0) this.modules.soundEffects.playCity();
+      else this.modules.soundEffects.playRecord();
     }
     
     // UI更新
@@ -414,6 +501,7 @@ const App = {
 
     // 拡張モジュール更新
     this.updateExtendedModules();
+    this.updateFunFeatures(date);
 
     // フォームリセット
     form.querySelector('#record-distance').value = '';
@@ -443,6 +531,32 @@ const App = {
     }
     if (this.modules.goals) {
       this.modules.goals.init('goals-settings', 'challenge-selector', this.data.records);
+    }
+  },
+
+  /**
+   * v2.1 モジュールを最新データで再描画
+   */
+  updateFunFeatures(recordDate = null) {
+    if (this.modules.funStats) {
+      this.runOptionalModule('FunStats update', () => this.modules.funStats.render(this.data, ROUTE_DATA));
+    }
+    if (this.modules.postcards) {
+      this.runOptionalModule('Postcards update', () => this.modules.postcards.render(this.data, ROUTE_DATA));
+    }
+    if (this.modules.replay) {
+      this.runOptionalModule('JourneyReplay update', () => this.modules.replay.update(this.data));
+    }
+    if (this.modules.shareCard) {
+      this.runOptionalModule('ShareCard update', () => {
+        this.modules.shareCard.update(this.data, Achievements.getCurrentLevel(this.data.totalDistance));
+      });
+    }
+    if (this.modules.seasonFx) {
+      this.runOptionalModule('SeasonFx update', () => this.modules.seasonFx.update(this.data, recordDate));
+    }
+    if (this.modules.funExtras) {
+      this.runOptionalModule('FunExtras update', () => this.modules.funExtras.update(this.data));
     }
   },
 
@@ -683,6 +797,8 @@ const App = {
 
     this.data = Storage.deleteRecord(recordId);
     this.updateUI();
+    this.updateExtendedModules();
+    this.updateFunFeatures();
     this.showToast('記録を削除しました', 'info');
   },
   
@@ -705,6 +821,7 @@ const App = {
       const stats = Storage.getStatistics();
       this.modules.charts.updateAllCharts(this.data.records, stats);
     }
+    if (tabId === 'stats-tab') this.modules.shareCard?.draw();
     
     // カレンダータブの場合、カレンダーを再描画
     if (tabId === 'calendar-tab' && this.modules.calendar) {
@@ -725,6 +842,7 @@ const App = {
     if (tabId === 'social-tab' && this.modules.social) {
       this.modules.social.init();
     }
+    if (tabId === 'social-tab') this.modules.shareCard?.draw();
   },
 
   /**
@@ -761,6 +879,8 @@ const App = {
         if (Storage.importData(event.target.result)) {
           this.data = Storage.load();
           this.updateUI();
+          this.updateExtendedModules();
+          this.updateFunFeatures();
           this.showToast('データをインポートしました', 'success');
         } else {
           this.showToast('インポートに失敗しました', 'error');
@@ -781,6 +901,8 @@ const App = {
     
     this.data = Storage.reset();
     this.updateUI();
+    this.updateExtendedModules();
+    this.updateFunFeatures();
     this.showToast('データをリセットしました', 'info');
   },
   
@@ -799,7 +921,7 @@ const App = {
     modal.classList.add('show');
     
     // 紙吹雪エフェクト
-    this.showConfetti();
+    this.showConfetti(city);
   },
   
   /**
@@ -816,7 +938,7 @@ const App = {
     const modal = document.getElementById('goal-modal');
     if (modal) {
       modal.classList.add('show');
-      this.showConfetti();
+      this.showConfetti('sapporo');
     }
   },
   
@@ -862,16 +984,22 @@ const App = {
   /**
    * 紙吹雪エフェクト
    */
-  showConfetti() {
-    const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6b9d'];
+  showConfetti(city = null) {
+    const cityId = typeof city === 'string' ? city : city?.id;
+    const theme = typeof FunExtras !== 'undefined'
+      ? FunExtras.getCelebrationTheme(cityId)
+      : { colors: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6b9d'], shapes: ['◆', '●', '★'] };
+    const colors = theme.colors;
+    const shapes = theme.shapes;
     const container = document.getElementById('confetti-container');
     if (!container) return;
     
     for (let i = 0; i < 50; i++) {
       const confetti = document.createElement('div');
-      confetti.className = 'confetti';
+      confetti.className = 'confetti confetti-themed';
+      confetti.textContent = shapes[i % shapes.length];
       confetti.style.left = Math.random() * 100 + '%';
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
       confetti.style.animationDelay = Math.random() * 0.5 + 's';
       confetti.style.animationDuration = (Math.random() * 1 + 2) + 's';
       container.appendChild(confetti);

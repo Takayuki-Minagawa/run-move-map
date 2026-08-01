@@ -32,7 +32,8 @@ const Goals = {
     
     // チャレンジUIを描画
     const activeChallenge = Storage.getActiveChallenge();
-    this.renderChallengeUI(challengeContainerId, this.records, activeChallenge);
+    const challengeProgress = this.calculateChallengeProgress(activeChallenge, this.records);
+    this.renderChallengeSelector(challengeContainerId, activeChallenge, challengeProgress);
     
     // イベントリスナーを設定
     this.setupEventListeners();
@@ -75,7 +76,7 @@ const Goals = {
     if (!challenge) return;
     
     const activeChallenge = {
-      ...challenge,
+      challengeId: challenge.id,
       startDate: new Date().toISOString().split('T')[0]
     };
     
@@ -282,7 +283,8 @@ const Goals = {
   calculateChallengeProgress(activeChallenge, records) {
     if (!activeChallenge) return null;
     
-    const challenge = this.getChallenges().find(c => c.id === activeChallenge.challengeId);
+    const challengeId = activeChallenge.challengeId || activeChallenge.id;
+    const challenge = this.getChallenges().find(c => c.id === challengeId);
     if (!challenge) return null;
     
     const startDate = new Date(activeChallenge.startDate);
@@ -476,7 +478,7 @@ const Goals = {
           </div>
           ${challengeProgress.completed ? 
             '<div class="challenge-completed">🎉 チャレンジ達成！</div>' : 
-            '<button class="abandon-challenge-btn" id="abandon-challenge">中断する</button>'
+            '<button class="abandon-challenge-btn" id="abandon-challenge-btn">中断する</button>'
           }
         </div>
       `;

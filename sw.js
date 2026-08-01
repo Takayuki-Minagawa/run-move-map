@@ -3,11 +3,17 @@
  * オフライン対応とキャッシュ管理
  */
 
-const CACHE_NAME = 'japan-journey-v4';
+const CACHE_VERSION = 'v2.1.0';
+const CACHE_NAME = `japan-journey-${CACHE_VERSION}`;
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
+  './css/extended.css',
+  './css/fun.css',
+  './assets/japan-map.svg',
+  './assets/icon-192.svg',
+  './assets/icon-512.svg',
   './js/app.js',
   './js/storage.js',
   './js/routes.js',
@@ -21,6 +27,13 @@ const ASSETS_TO_CACHE = [
   './js/extended-achievements.js',
   './js/multi-routes.js',
   './js/social.js',
+  './js/fun-stats.js',
+  './js/postcards.js',
+  './js/replay.js',
+  './js/share-card.js',
+  './js/season-fx.js',
+  './js/sound-effects.js',
+  './js/fun-extras.js',
   './manifest.json'
 ];
 

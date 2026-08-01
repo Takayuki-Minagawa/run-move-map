@@ -1,0 +1,26 @@
+{
+  "totalDistance": 12.5,
+  "records": [
+    {
+      "id": 1754000000000,
+      "date": "2026-07-31",
+      "distance": 12.5,
+      "type": "run",
+      "memo": "v2.0.3 backup",
+      "photo": null,
+      "createdAt": "2026-07-31T00:00:00.000Z"
+    }
+  ],
+  "earnedBadges": ["distance_10"],
+  "reachedCities": [],
+  "streakDays": 1,
+  "lastRecordDate": "2026-07-31",
+  "stats": {
+    "totalRunDistance": 12.5,
+    "totalWalkDistance": 0,
+    "totalRecords": 1,
+    "longestStreak": 1
+  },
+  "createdAt": "2026-07-31T00:00:00.000Z",
+  "updatedAt": "2026-07-31T00:00:00.000Z"
+}

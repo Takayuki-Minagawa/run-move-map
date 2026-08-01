@@ -30,6 +30,14 @@ module.exports = {
     ExtendedAchievements: 'readonly',
     Social: 'readonly',
     RouteManager: 'readonly',
+    // v2.1 表示・演出モジュール
+    FunStats: 'readonly',
+    Postcards: 'readonly',
+    JourneyReplay: 'readonly',
+    ShareCard: 'readonly',
+    SeasonFx: 'readonly',
+    SoundEffects: 'readonly',
+    FunExtras: 'readonly',
     // 外部ライブラリ
     Chart: 'readonly',
   },

@@ -125,7 +125,8 @@ const FunExtras = {
     if (!container) return;
     const cities = this.getReachedQuizCities();
     if (cities.length === 0) {
-      container.innerHTML = '<p class="fun-empty">最初の都市に到着するとクイズが解放されます。</p>';
+      delete container.dataset.cityId;
+      container.innerHTML = '<p class="fun-empty">このルートで遊べるクイズはありません。</p>';
       return;
     }
     const city = cities[this.quizIndex % cities.length];

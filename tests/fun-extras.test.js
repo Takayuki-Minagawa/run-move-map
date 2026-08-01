@@ -57,4 +57,13 @@ describe('FunExtras', () => {
     ] };
     expect(FunExtras.getReachedQuizCities().map(city => city.id)).toEqual(['okinawa', 'kagoshima']);
   });
+
+  test('対象クイズがないルートでは正しい空状態を表示する', () => {
+    document.body.innerHTML = '<div id="quiz-container" data-city-id="okinawa"></div>';
+    FunExtras.data = { totalDistance: 0, reachedCities: [] };
+    FunExtras.route = { cities: [{ id: 'unknown', cumulative: 0 }] };
+    FunExtras.renderQuiz();
+    expect(document.getElementById('quiz-container').textContent).toBe('このルートで遊べるクイズはありません。');
+    expect(document.getElementById('quiz-container').dataset.cityId).toBeUndefined();
+  });
 });

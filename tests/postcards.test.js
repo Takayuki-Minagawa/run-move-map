@@ -25,6 +25,11 @@ describe('Postcards', () => {
     expect([...unlocked]).toEqual(['start', 'middle']);
   });
 
+  test('逆算不能な到達日は開始地点と到達都市で表示を分ける', () => {
+    expect(Postcards.formatDate(null, 'START')).toBe('START');
+    expect(Postcards.formatDate(null)).toBe('日付不明');
+  });
+
   test('絵はがきと御朱印帳を描画する', () => {
     document.body.innerHTML = '<div id="postcard-gallery"></div><div id="stamp-book"></div>';
     Postcards.render({
@@ -35,5 +40,17 @@ describe('Postcards', () => {
     expect(document.querySelectorAll('.postcard')).toHaveLength(2);
     expect(document.querySelectorAll('.goshuin-page')).toHaveLength(3);
     expect(document.querySelectorAll('.goshuin-page.reached')).toHaveLength(2);
+  });
+
+  test('記録削除後も解放済みの都市は到達日不明として描画する', () => {
+    document.body.innerHTML = '<div id="postcard-gallery"></div><div id="stamp-book"></div>';
+    Postcards.render({
+      totalDistance: 0,
+      reachedCities: ['middle'],
+      records: []
+    }, { cities });
+    expect(document.getElementById('postcard-gallery').textContent).toContain('START');
+    expect(document.getElementById('postcard-gallery').textContent).toContain('日付不明');
+    expect(document.getElementById('stamp-book').textContent).toContain('日付不明');
   });
 });

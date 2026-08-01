@@ -30,11 +30,20 @@ const SeasonFx = {
     return date instanceof Date ? date.getMonth() + 1 : new Date().getMonth() + 1;
   },
 
+  getLatestRecordDate(records = []) {
+    const list = Array.isArray(records) ? records : [];
+    return list.reduce((latest, record) => {
+      const date = String(record?.date || '').slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return latest;
+      return !latest || date > latest ? date : latest;
+    }, null);
+  },
+
   init(data, storage) {
     this.storage = storage;
     const settings = storage?.getSettings?.() || {};
     this.enabled = settings.seasonFx !== false;
-    this.currentDate = data?.records?.[data.records.length - 1]?.date || new Date();
+    this.currentDate = this.getLatestRecordDate(data?.records) || new Date();
 
     const toggle = document.getElementById('season-fx-toggle');
     if (toggle) {
@@ -51,18 +60,20 @@ const SeasonFx = {
     this.render(this.currentDate);
   },
 
-  update(data, recordDate = null) {
-    this.currentDate = recordDate || data?.records?.[data.records.length - 1]?.date || this.currentDate || new Date();
+  update(data) {
+    this.currentDate = this.getLatestRecordDate(data?.records) || new Date();
     this.render(this.currentDate);
   },
 
   render(date) {
     const container = document.getElementById('season-fx');
     const label = document.getElementById('season-fx-label');
+    const badge = document.getElementById('season-fx-badge') || label?.closest('.season-fx-badge');
     if (!container) return;
     container.replaceChildren();
     container.className = 'season-fx';
     container.hidden = !this.enabled;
+    if (badge) badge.hidden = !this.enabled;
     if (!this.enabled) {
       if (label) label.textContent = 'OFF';
       return;

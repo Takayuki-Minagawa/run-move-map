@@ -71,9 +71,9 @@ const Postcards = {
     }));
   },
 
-  formatDate(date) {
+  formatDate(date, fallback = '日付不明') {
     const match = String(date || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    return match ? `${match[1]}.${Number(match[2])}.${Number(match[3])}` : 'START';
+    return match ? `${match[1]}.${Number(match[2])}.${Number(match[3])}` : fallback;
   },
 
   render(data, route = (typeof ROUTE_DATA !== 'undefined' ? ROUTE_DATA : null)) {
@@ -104,7 +104,7 @@ const Postcards = {
           <p>${this.escapeHtml(city.trivia)}</p>
           <div class="postcard-footer">
             <span>${this.escapeHtml(city.landmark)}</span>
-            <time>${this.formatDate(city.reachedDate)}</time>
+            <time>${this.formatDate(city.reachedDate, city.cumulative === 0 ? 'START' : '日付不明')}</time>
           </div>
         </div>
       </article>
@@ -126,7 +126,7 @@ const Postcards = {
             <span>${reached ? '旅' : '未'}</span>
             <strong>${this.escapeHtml(city.name)}</strong>
           </div>
-          <small>${reached ? this.formatDate(reachedDates[city.id]) : `${city.cumulative}km`}</small>
+          <small>${reached ? this.formatDate(reachedDates[city.id], city.cumulative === 0 ? 'START' : '日付不明') : `${city.cumulative}km`}</small>
         </div>
       `;
     }).join('');

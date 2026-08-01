@@ -10,13 +10,32 @@ describe('SeasonFx', () => {
   });
 
   test('既定値を保存せず設定を読み、要素数を制限して描画する', () => {
-    document.body.innerHTML = '<input type="checkbox" id="season-fx-toggle"><div id="season-fx"></div><span id="season-fx-label"></span>';
+    document.body.innerHTML = '<input type="checkbox" id="season-fx-toggle"><div id="season-fx"></div><span id="season-fx-badge" class="season-fx-badge"><span id="season-fx-label"></span></span>';
     const storage = { getSettings: jest.fn(() => ({})), saveSettings: jest.fn() };
     SeasonFx.bound = false;
     SeasonFx.init({ records: [{ date: '2026-04-01' }] }, storage);
     expect(storage.saveSettings).not.toHaveBeenCalled();
     expect(document.querySelectorAll('.season-particle').length).toBeLessThanOrEqual(18);
     expect(document.getElementById('season-fx-label').textContent).toBe('春・桜');
+  });
+
+  test('配列末尾ではなく日付順で最新の記録月を使う', () => {
+    document.body.innerHTML = '<div id="season-fx"></div><span id="season-fx-label"></span>';
+    SeasonFx.update({ records: [
+      { date: '2026-07-01' },
+      { date: '2025-01-01' }
+    ] });
+    expect(SeasonFx.currentDate).toBe('2026-07-01');
+    expect(document.getElementById('season-fx-label').textContent).toBe('夏・波');
+  });
+
+  test('設定をOFFにすると演出と季節バッジを非表示にする', () => {
+    document.body.innerHTML = '<input type="checkbox" id="season-fx-toggle"><div id="season-fx"></div><span id="season-fx-badge" class="season-fx-badge"><span id="season-fx-label"></span></span>';
+    const storage = { getSettings: jest.fn(() => ({ seasonFx: false })), saveSettings: jest.fn() };
+    SeasonFx.bound = false;
+    SeasonFx.init({ records: [{ date: '2026-04-01' }] }, storage);
+    expect(document.getElementById('season-fx').hidden).toBe(true);
+    expect(document.getElementById('season-fx-badge').hidden).toBe(true);
   });
 });
 

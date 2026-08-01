@@ -103,6 +103,10 @@
   z-index: 5;
 }
 
+.season-fx-badge[hidden] {
+  display: none;
+}
+
 @keyframes seasonFall {
   0% { opacity: 0; transform: translate3d(0, -10%, 0) rotate(0); }
   12% { opacity: 0.9; }

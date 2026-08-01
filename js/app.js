@@ -501,7 +501,7 @@ const App = {
 
     // 拡張モジュール更新
     this.updateExtendedModules();
-    this.updateFunFeatures(date);
+    this.updateFunFeatures();
 
     // フォームリセット
     form.querySelector('#record-distance').value = '';
@@ -537,7 +537,7 @@ const App = {
   /**
    * v2.1 モジュールを最新データで再描画
    */
-  updateFunFeatures(recordDate = null) {
+  updateFunFeatures() {
     if (this.modules.funStats) {
       this.runOptionalModule('FunStats update', () => this.modules.funStats.render(this.data, ROUTE_DATA));
     }
@@ -553,7 +553,7 @@ const App = {
       });
     }
     if (this.modules.seasonFx) {
-      this.runOptionalModule('SeasonFx update', () => this.modules.seasonFx.update(this.data, recordDate));
+      this.runOptionalModule('SeasonFx update', () => this.modules.seasonFx.update(this.data));
     }
     if (this.modules.funExtras) {
       this.runOptionalModule('FunExtras update', () => this.modules.funExtras.update(this.data));
